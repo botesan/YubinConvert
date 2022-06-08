@@ -247,7 +247,7 @@ private fun SQLiteDB.replaceWords() = runInTransaction {
                 kana_town_area = replace(kana_town_area, 'つぎの', 'ほかにけいさいがある')
         where   town_area like '%（次のビルを除く）'
             and kana_town_area like '%（つぎのびるをのぞく）'
-    """
+        """
     )
 }
 
@@ -257,7 +257,7 @@ private fun SQLiteDB.makeTownAreaShrinkBase() = runInTransaction {
         """
         insert into town_area_shrink_temp(id,kana,name)
             values(200000, '（ほかにけいさいがないばあい）', '（他に掲載がない場合）')
-    """
+        """
     )
     // language=sql
     execute(
@@ -319,7 +319,7 @@ private fun SQLiteDB.makeTownAreaShrinkBase() = runInTransaction {
                 group by kana_town_area_sub, town_area_sub
                 having count(kana_town_area_sub) >= 3
             )
-    """
+        """
     )
     // language=sql
     execute("insert into town_area_shrink select id,kana,name from town_area_shrink_temp")
@@ -354,7 +354,7 @@ private fun SQLiteDB.makeZipCodeShrinkBase() = runInTransaction {
                 zip_code_org left outer join town_area_shrink_temp
                     on  kana_town_area glob town_area_shrink_temp.kana || '*'
                     and town_area      glob town_area_shrink_temp.name || '*'
-    """
+        """
     )
     println("\tinserted count=${lastChangesCount()}")
 }
@@ -384,7 +384,7 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra1() = runInTransaction {
             order by
                 zip_code_shrink_temp.rowid
         )
-    """
+        """
     )
     println("\tdeleted count=${lastChangesCount()}")
 }
@@ -414,7 +414,7 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra2() = runInTransaction {
             order by
                 zip_code_shrink_temp.rowid
         )
-    """
+        """
     )
     println("\tdeleted count=${lastChangesCount()}")
 }
@@ -433,7 +433,7 @@ private fun SQLiteDB.renumberTownAreaShrink() {
             town_area_shrink.id
         order by
             count(town_area_shrink.id) desc, length(kana), length(name), kana, name
-    """
+        """
     ).use {
         it.rowEach { _, row ->
             (row.firstOrNull() as? Long)?.let { oldId -> oldIds.add(oldId) }
@@ -458,6 +458,7 @@ private fun SQLiteDB.renumberTownAreaShrink() {
                     }.execute()
                     newId++
                 }
+                // language=
                 println("\tlast newId=$newId")
             }
         }
@@ -488,7 +489,7 @@ private fun SQLiteDB.zipCodeShrinkJoinTownArea() = runInTransaction {
                 town_area_id
             having
                 count(town_area_id) = 1
-    """
+        """
     )
     println("\tinserted count=${lastChangesCount()}")
 }
@@ -512,7 +513,7 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra3() = runInTransaction {
             order by
                 zip_code_shrink_temp.rowid
         )
-    """
+        """
     )
     println("\tdeleted count=${lastChangesCount()}")
 }
@@ -530,7 +531,7 @@ private fun SQLiteDB.makeOldZipCodeShrink() = runInTransaction {
         insert into old_zip_code_shrink
             select  id-1-128, old_zip_code
             from    old_zip_code_shrink_temp
-    """
+        """
     )
 }
 
@@ -552,7 +553,7 @@ private fun SQLiteDB.makeZipCodeShrink() = runInTransaction {
                 on zip_code_shrink_temp.old_zip_code = old_zip_code_shrink.old_zip_code
         order by
             zip_code_shrink_temp.id
-    """
+        """
     )
     println("\tinserted count=${lastChangesCount()}")
 }
@@ -572,7 +573,7 @@ private fun SQLiteDB.deleteTownAreaShrinkExtra() = runInTransaction {
                     where   town_area_id is null
             )
         )
-    """
+        """
     )
     println("\tdeleted count=${lastChangesCount()}")
 }
@@ -618,7 +619,7 @@ private fun SQLiteDB.checkZipCode() {
         )
         group by         id,x0401_02_code,old_zip_code,zip_code,kana_town_area,town_area
         having count(id) <> 2
-    """
+        """
     ).second
     if (rows.isNotEmpty()) {
         rows.take(2).forEach { println("\t$it") }
@@ -645,6 +646,7 @@ private fun SQLiteDB.setDateTime(files: DBFilenames) {
     runInTransaction {
         val createdTimeMillis = 1000 * fileModifiedTimeSec(files.zipKenAll)
         val processedTimeMillis = 1000 * currentTimeSec()
+        // language=sql
         prepare("insert or replace into date_time values(?,?,?)").use {
             it.bind(1, 1)
             it.bind(2, createdTimeMillis)
@@ -664,7 +666,7 @@ private fun SQLiteDB.printLastInformation() {
                         on    zip_code_shrink.town_area_id = town_area_shrink.id
                 union select -sum(length(town_area_shrink.kana)+length(town_area_shrink.name)+1)
                         from    town_area_shrink)
-    """
+        """
     ).second.firstOrNull()?.firstOrNull()
     val pageSize = execute("pragma page_size").second.firstOrNull()?.firstOrNull()
     val pageCount = execute("pragma page_count").second.firstOrNull()?.firstOrNull()

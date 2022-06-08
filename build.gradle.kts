@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.konan.target.presetName
-
 plugins {
     kotlin("multiplatform") version "1.6.21"
 }
@@ -22,6 +20,7 @@ kotlin {
     }
     nativeTarget.apply {
         compilations.getByName("main") {
+            @Suppress("UNUSED_VARIABLE")
             cinterops {
                 val stat by creating {
                     defFile(project.file("src/nativeInterop/cinterop/files/stat.def"))
@@ -36,13 +35,14 @@ kotlin {
         }
         binaries {
             all {
-                binaryOptions["memoryModel"] = "experimental"
+                binaryOption("memoryModel", "experimental")
             }
             executable {
-                entryPoint = "main"
+                entryPoint("main")
             }
         }
     }
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val nativeMain by getting
         val nativeTest by getting

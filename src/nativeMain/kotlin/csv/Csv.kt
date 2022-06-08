@@ -57,7 +57,7 @@ private class CsvTokenIterator(private val iterator: Iterator<Char>) : Iterator<
             COMMA -> CsvToken.Delim
             // line break
             CR -> {
-                if (!iterator.hasNext()) error("Cannot parse csv. Nothing next CR.")
+                if (iterator.hasNext().not()) error("Cannot parse csv. Nothing next CR.")
                 val ch2 = iterator.next()
                 if (ch2 == LF) {
                     CsvToken.LineBreak

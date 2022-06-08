@@ -28,6 +28,7 @@ fun String.trimSql() = trim()
     .splitToSequence(" || ").joinTo(StringBuilder(length), "||")
     .toString()
 
+// language=sql
 fun SQLiteDB.dropIfExists(kind: String, name: String) = execute("drop $kind if exists $name")
 fun SQLiteDB.dropTableIfExists(name: String) = dropIfExists("table", name)
 fun SQLiteDB.dropViewIfExists(name: String) = dropIfExists("view", name)
