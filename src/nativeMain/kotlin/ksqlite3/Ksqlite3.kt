@@ -105,13 +105,16 @@ class SQLiteDB private constructor(
 }
 
 inline fun <R> SQLiteDB.runInTransaction(block: SQLiteDB.() -> R): R {
+    // language=sql
     execute("begin transaction")
     try {
         val result = block()
+        // language=sql
         execute("commit transaction")
         return result
     } catch (th: Throwable) {
         try {
+            // language=sql
             execute("rollback transaction")
         } catch (th2: Throwable) {
             throw SQLiteException("Rollback failed[$th2]", th)

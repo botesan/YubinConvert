@@ -45,9 +45,16 @@ private class SjisCodeIterator(private val iterator: ByteIterator) : IntIterator
 }
 
 private class Sjis2CharMap(source: IntArray) {
+    @Suppress("PrivatePropertyName")
     private val codes_A1_DF = CharArray(size = 0xDF - 0xA1 + 1)
+
+    @Suppress("PrivatePropertyName")
     private val codes_8140_84BE = CharArray(size = 0x84BE - 0x8140 + 1)
+
+    @Suppress("PrivatePropertyName")
     private val codes_889F_9872 = CharArray(size = 0x9872 - 0x889F + 1)
+
+    @Suppress("PrivatePropertyName")
     private val codes_989F_EAA4 = CharArray(size = 0xEAA4 - 0x989F + 1)
 
     init {
