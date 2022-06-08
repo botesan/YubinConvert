@@ -1,0 +1,10 @@
+depends = posix
+package = files.stat
+headers = sys/stat.h
+
+---
+typedef struct stat Stat;
+static inline long modified_secound(Stat *st)
+{
+    return st->st_mtime;
+}

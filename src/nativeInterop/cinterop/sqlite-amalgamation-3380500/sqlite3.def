@@ -1,0 +1,12 @@
+depends = posix
+package = sqlite3
+linkerOpts.linux = -lc
+
+---
+#include "sqlite3.c"
+static int sqlite3_bind_text_wrapper(sqlite3_stmt* stmt, int n, const char* text)
+{
+    char* textDup = (char *)sqlite3_malloc(strlen(text)+1);
+    strcpy(textDup, text);
+    return sqlite3_bind_text(stmt, n, textDup, -1, sqlite3_free);
+}
