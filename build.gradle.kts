@@ -22,14 +22,10 @@ kotlin {
         compilations.getByName("main") {
             @Suppress("UNUSED_VARIABLE")
             cinterops {
-                val stat by creating {
-                    defFile(project.file("src/nativeInterop/cinterop/files/stat.def"))
-                }
                 val sqlite3 by creating {
                     val dir = project.file("src/nativeInterop/cinterop/sqlite-amalgamation-3380500")
                     defFile(dir.resolve("sqlite3.def"))
                     compilerOpts("-I$dir")
-                    includeDirs.allHeaders(dir)
                 }
             }
         }
@@ -44,6 +40,12 @@ kotlin {
     }
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
+        val korioVersion = "2.7.0"
+        val commonMain by getting {
+            dependencies {
+                implementation("com.soywiz.korlibs.korio:korio:$korioVersion")
+            }
+        }
         val nativeMain by getting
         val nativeTest by getting
     }

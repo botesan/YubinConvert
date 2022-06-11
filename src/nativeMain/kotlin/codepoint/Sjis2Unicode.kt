@@ -1,7 +1,5 @@
 package codepoint
 
-import kotlin.system.measureTimeMillis
-
 fun ByteArray.asSjisSequence(): Sequence<Char> = asSjisCodeSequence().asSjisSequence()
 
 private fun IntSequence.asSjisSequence() = SjisSequence(this)
@@ -58,22 +56,20 @@ private class Sjis2CharMap(source: IntArray) {
     private val codes_989F_EAA4 = CharArray(size = 0xEAA4 - 0x989F + 1)
 
     init {
-        measureTimeMillis {
-            source.asSequence().chunked(2).map { it[0] to it[1].toChar() }.forEach { (sjis, ch) ->
-                when (sjis) {
-                    // 半角カナ
-                    in 0xA1..0xDF -> codes_A1_DF[sjis - 0xA1] = ch
-                    // 平仮名記号など
-                    in 0x8140..0x84BE -> codes_8140_84BE[sjis - 0x8140] = ch
-                    // JIS第一水準
-                    in 0x889F..0x9872 -> codes_889F_9872[sjis - 0x889F] = ch
-                    // JIS第二水準
-                    in 0x989F..0xEAA4 -> codes_989F_EAA4[sjis - 0x989F] = ch
-                    // 他
-                    else -> error("sjis=$sjis")
-                }
+        source.asSequence().chunked(2).map { it[0] to it[1].toChar() }.forEach { (sjis, ch) ->
+            when (sjis) {
+                // 半角カナ
+                in 0xA1..0xDF -> codes_A1_DF[sjis - 0xA1] = ch
+                // 平仮名記号など
+                in 0x8140..0x84BE -> codes_8140_84BE[sjis - 0x8140] = ch
+                // JIS第一水準
+                in 0x889F..0x9872 -> codes_889F_9872[sjis - 0x889F] = ch
+                // JIS第二水準
+                in 0x989F..0xEAA4 -> codes_989F_EAA4[sjis - 0x989F] = ch
+                // 他
+                else -> error("sjis=$sjis")
             }
-        }.let { println("\tSjis2CharMap init : $it[ms]") }
+        }
     }
 
     operator fun get(sjis: Int): Char {

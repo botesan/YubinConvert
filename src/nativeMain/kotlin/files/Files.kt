@@ -1,16 +1,14 @@
 package files
 
-import files.stat.Stat
-import files.stat.modified_secound
 import kotlinx.cinterop.*
 import platform.posix.*
 
 fun readFile(filePath: String): ByteArray {
     val size = fileSize(filePath)
-    if (size < 0) throw Exception("Illegal size file[filePath=$filePath, size=$size]")
+    if (size < 0) error("Illegal size file[filePath=$filePath, size=$size]")
     //
-    val fp = fopen(filePath, "rb")
-    if (fp == NULL) throw Exception("File open error[filePath=$filePath]")
+    val fp = _wfopen(filePath.wcstr, "rb".wcstr)
+    if (fp == NULL) error("File open error[filePath=$filePath]")
     //
     try {
         val buffer = ByteArray(size)
@@ -23,11 +21,11 @@ fun readFile(filePath: String): ByteArray {
                 if (result == 0UL) {
                     val error = ferror(fp)
                     val eof = feof(fp)
-                    if (error != 0) throw Exception("File read error[filePath=$filePath, count=$count]")
+                    if (error != 0) error("File read error[filePath=$filePath, error=$error, errno=$errno, count=$count]")
                     if (eof != 0) break
                 }
                 if (count.toULong() + result > buffer.size.convert()) {
-                    throw Exception("File read error[filePath=$filePath, count=$count, result=$result]")
+                    error("File read error[filePath=$filePath, count=$count, result=$result]")
                 }
                 count += result.toInt()
             }
@@ -38,16 +36,56 @@ fun readFile(filePath: String): ByteArray {
     }
 }
 
+fun writeFile(filePath: String, data: ByteArray) {
+    val fp = _wfopen(filePath.wcstr, "wb".wcstr)
+    if (fp == NULL) error("File open error[filePath=$filePath]")
+    //
+    try {
+        data.usePinned { pinned ->
+            val result = fwrite(pinned.addressOf(0), 1, data.size.convert(), fp)
+            if (result < data.size.convert()) {
+                val error = ferror(fp)
+                error("File write error[filePath=$filePath, error=$error, errno=$errno]")
+            }
+        }
+    } finally {
+        fclose(fp)
+    }
+}
+
+fun fileExists(filePath: String): Boolean = memScoped {
+    val st = alloc<stat>()
+    val result = wstat(filePath.wcstr, st.ptr)
+    if (result != 0) {
+        if (errno == ENOENT) return@memScoped false
+        error("Fail stat[filePath=$filePath,errno=$errno]")
+    }
+    true
+}
+
 fun fileSize(filePath: String): Int = memScoped {
-    val st = alloc<Stat>()
-    val result = stat(filePath, st.ptr)
-    if (result != 0) throw Exception("Fail stat[filePath=$filePath]")
-    st.readValue().useContents { st_size }.toInt()
+    val st = alloc<stat>()
+    val result = wstat(filePath.wcstr, st.ptr)
+    if (result != 0) error("Fail stat[filePath=$filePath, errno=$errno]")
+    st.st_size
 }
 
 fun fileModifiedTimeSec(filePath: String): Long = memScoped {
-    val st = alloc<Stat>()
-    val result = stat(filePath, st.ptr)
-    if (result != 0) throw Exception("Fail stat[filePath=$filePath]")
-    modified_secound(st.ptr).toLong()
+    val st = alloc<stat>()
+    val result = wstat(filePath.wcstr, st.ptr)
+    if (result != 0) error("Fail stat[filePath=$filePath, errno=$errno]")
+    st.st_mtime
+}
+
+fun setFileModifiedTimeSec(filePath: String, modifiedTimeSec: Long) = memScoped {
+    val st = alloc<stat>()
+    if (wstat(filePath.wcstr, st.ptr) != 0) {
+        error("Fail stat[filePath=$filePath,errno=$errno]")
+    }
+    val tb = alloc<_utimbuf>()
+    tb.actime = st.st_atime
+    tb.modtime = modifiedTimeSec
+    if (_wutime(filePath.wcstr, tb.ptr) != 0) {
+        error("Fail utime[filePath=$filePath, errno=$errno, modifiedTimeSec=$modifiedTimeSec]")
+    }
 }

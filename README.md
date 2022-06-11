@@ -11,7 +11,7 @@ Kotlin/Nativeで記述しており、Windowsでビルドできることを確認
 ## 実行方法
 下記ダウンロードしたken_all.zipと展開したKEN_ALL.CSVの**両方**を、作業ディレクトリに置いて実行します。
 https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
-> $ YubinConvert.exe <作業ディレクトリ>
+> YubinConvert.exe [作業ディレクトリ]
 
 ## 出力ファイル
 - ken_all.sqlite
