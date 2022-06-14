@@ -2,14 +2,22 @@ package command
 
 import convert.csvConvert
 import convert.dbConvert
+import download.download
 import unzip.unZip
 
 private val name2Command = (All.commands + All).associateBy { it.name }
 
 fun getCommand(name: String): Command? = name2Command[name]
 
-object All : CommandList(listOf(UnZip, Convert)) {
+object All : CommandList(listOf(Download, UnZip, Convert)) {
     override val name: String = "all"
+}
+
+object Download : Command {
+    override val name: String = "download"
+    override fun exec(filenames: Filenames) {
+        download(filenames)
+    }
 }
 
 object UnZip : Command {

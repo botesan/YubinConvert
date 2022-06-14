@@ -34,15 +34,16 @@ data class Options(
         print(
             """
             |usage:
-            |    $program [options] {all|unzip|convert}...
+            |    $program [options] {all|download|unzip|convert}...
             |
             |options:
-            |    -d <dir> : set work directory path.
+            |    -d <dir> : 作業ディレクトリを指定します
             |
             |commands:
-            |    all     : ...
-            |    unzip   : ...
-            |    convert : ...
+            |    all      : ダウンロードと展開、変換を行います
+            |    download : ken_all.zipをダウンロードします
+            |    unzip    : ken_all.zipを展開します
+            |    convert  : KEN_ALL.CSVファイルを変換します
             |""".trimMargin()
         )
     }

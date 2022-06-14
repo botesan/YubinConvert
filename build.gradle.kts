@@ -42,10 +42,9 @@ kotlin {
     }
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val korioVersion = "2.7.0"
         val commonMain by getting {
             dependencies {
-                implementation("com.soywiz.korlibs.korio:korio:$korioVersion")
+                implementation("com.soywiz.korlibs.korio:korio:2.7.0")
             }
         }
         val nativeMain by getting

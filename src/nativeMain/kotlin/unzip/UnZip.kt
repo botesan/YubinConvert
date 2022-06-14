@@ -9,12 +9,11 @@ import files.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import tool.currentTimeText
-import kotlin.math.abs
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 fun unZip(filenames: Filenames) {
-    println("[${currentTimeText()}] UnZip : Extract ${DefaultFilenames.csvKenAll} from ${DefaultFilenames.zipKenAll}")
+    println("[${currentTimeText()}] Unzip : Extract ${DefaultFilenames.csvKenAll} from ${DefaultFilenames.zipKenAll}")
     runBlocking {
         // ZIPファイル
         val zipBytes = readFile(filenames.zipKenAll)
@@ -26,16 +25,17 @@ fun unZip(filenames: Filenames) {
         val csvStatInZip = csvFileInZip.stat()
         val csvCreateTimeSecInZip = csvStatInZip.createTime.unixMillisDouble
             .toDuration(DurationUnit.MILLISECONDS).toLong(DurationUnit.SECONDS)
+        println("\t       (${DefaultFilenames.csvKenAll} / ${csvStatInZip.size} / $csvCreateTimeSecInZip)")
         // CSVファイル
         println("\tto   : ${filenames.csvKenAll}")
         if (fileExists(filenames.csvKenAll)) {
             // スキップチェック
             val csvModifiedTimeSec = fileModifiedTimeSec(filenames.csvKenAll)
-            val csvFileSize = fileSize(filenames.csvKenAll)
-            if (csvStatInZip.size.toInt() == csvFileSize &&
-                abs(csvCreateTimeSecInZip - csvModifiedTimeSec) <= 1
+            val csvFileSize = fileSize(filenames.csvKenAll).toLong()
+            if (csvStatInZip.size == csvFileSize &&
+                csvCreateTimeSecInZip shr 1 == csvModifiedTimeSec shr 1
             ) {
-                println("\tCSV file exists. Same time and size. Skip UnZip.")
+                println("\tCSV file exists. Same time and size. Skip unzip.")
                 return@runBlocking
             }
         }
@@ -44,6 +44,6 @@ fun unZip(filenames: Filenames) {
         writeFile(filenames.csvKenAll, csvBytes)
         // 更新日時設定
         setFileModifiedTimeSec(filenames.csvKenAll, modifiedTimeSec = csvCreateTimeSecInZip)
-        println("\tUnZip finish.")
+        println("\tUnzip finish.")
     }
 }
