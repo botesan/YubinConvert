@@ -7,7 +7,7 @@ fun readFile(filePath: String): ByteArray {
     val size = fileSize(filePath)
     if (size < 0) error("Illegal size file[filePath=$filePath, size=$size]")
     //
-    val fp = _wfopen(filePath.wcstr, "rb".wcstr)
+    val fp = fopenWrapper(filePath, "rb")
     if (fp == NULL) error("File open error[filePath=$filePath]")
     //
     try {
@@ -37,7 +37,7 @@ fun readFile(filePath: String): ByteArray {
 }
 
 fun writeFile(filePath: String, data: ByteArray) {
-    val fp = _wfopen(filePath.wcstr, "wb".wcstr)
+    val fp = fopenWrapper(filePath, "wb")
     if (fp == NULL) error("File open error[filePath=$filePath]")
     //
     try {
@@ -55,7 +55,7 @@ fun writeFile(filePath: String, data: ByteArray) {
 
 fun fileExists(filePath: String): Boolean = memScoped {
     val st = alloc<stat>()
-    val result = wstat(filePath.wcstr, st.ptr)
+    val result = statWrapper(filePath, st.ptr)
     if (result != 0) {
         if (errno == ENOENT) return@memScoped false
         error("Fail stat[filePath=$filePath,errno=$errno]")
@@ -65,27 +65,27 @@ fun fileExists(filePath: String): Boolean = memScoped {
 
 fun fileSize(filePath: String): Int = memScoped {
     val st = alloc<stat>()
-    val result = wstat(filePath.wcstr, st.ptr)
+    val result = statWrapper(filePath, st.ptr)
     if (result != 0) error("Fail stat[filePath=$filePath, errno=$errno]")
-    st.st_size
+    st.st_size.convert()
 }
 
 fun fileModifiedTimeSec(filePath: String): Long = memScoped {
     val st = alloc<stat>()
-    val result = wstat(filePath.wcstr, st.ptr)
+    val result = statWrapper(filePath, st.ptr)
     if (result != 0) error("Fail stat[filePath=$filePath, errno=$errno]")
-    st.st_mtime
+    st.modifiedTimeSec
 }
 
 fun setFileModifiedTimeSec(filePath: String, modifiedTimeSec: Long) = memScoped {
     val st = alloc<stat>()
-    if (wstat(filePath.wcstr, st.ptr) != 0) {
+    if (statWrapper(filePath, st.ptr) != 0) {
         error("Fail stat[filePath=$filePath,errno=$errno]")
     }
-    val tb = alloc<_utimbuf>()
-    tb.actime = st.st_atime
+    val tb = alloc<Utimbuf>()
+    tb.actime = st.accessedTimeSec
     tb.modtime = modifiedTimeSec
-    if (_wutime(filePath.wcstr, tb.ptr) != 0) {
+    if (utimeWrapper(filePath, tb.ptr) != 0) {
         error("Fail utime[filePath=$filePath, errno=$errno, modifiedTimeSec=$modifiedTimeSec]")
     }
 }

@@ -19,13 +19,9 @@ private fun CPointer<ByteVar>.nullTerminateToByteArray(): ByteArray =
 private fun CPointer<CPointerVar<ByteVar>>?.nullTerminateToByteArrays(count: Int): List<ByteArray> =
     (0..count).mapNotNull { index -> this?.get(index)?.nullTerminateToByteArray() }
 
+// TODO: mingwだと日本語パス名が使用できない（勝手にSJISで渡ってきてKotlin側でおかしくなる？）
 private fun List<ByteArray>.toStrings(): List<String> =
-    when (Platform.osFamily) {
-        // TODO: mingwだと日本語パス名が使用できない（勝手にSJISで渡ってきてKotlin側でおかしくなる？）
-        OsFamily.WINDOWS ->
-            this.map { it.asSjisSequence().toList().toCharArray().concatToString() }
-        else ->
-            this.map { it.toKString() }
-    }
+    map { it.asSjisSequence().toList().toCharArray().concatToString() }
 
-fun getArgv(): List<String> = __argv.nullTerminateToByteArrays(__argc).toStrings()
+@Suppress("UNUSED_PARAMETER")
+fun getArgv(args: Array<String>): List<String> = __argv.nullTerminateToByteArrays(__argc).toStrings()

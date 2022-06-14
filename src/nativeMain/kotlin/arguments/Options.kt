@@ -1,6 +1,7 @@
 package arguments
 
 import command.*
+import main.PROGRAM_NAME
 
 /**
  * @property program プログラム名
@@ -23,7 +24,7 @@ data class Options(
         workDirectory: String?,
         commands: List<Command>,
     ) : this(
-        program = program,
+        program = program.ifEmpty { PROGRAM_NAME },
         workDirectory = workDirectory ?: "",
         commands = commands,
         isValid = workDirectory != null && commands.isNotEmpty(),
@@ -50,7 +51,7 @@ data class Options(
         fun parse(argv: List<String>): Options {
             require(argv.isNotEmpty()) { "Require argv is not empty." }
             //
-            val program = argv[0]
+            val program = argv[0].split('/', '\\').last()
             var workDirectory: String? = ""
             val commands = mutableListOf<Command>()
             //

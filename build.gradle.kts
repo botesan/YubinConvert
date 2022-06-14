@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.konan.target.Family
+
 plugins {
     kotlin("multiplatform") version "1.7.0"
 }
@@ -34,7 +36,7 @@ kotlin {
                 binaryOption("memoryModel", "experimental")
             }
             executable {
-                entryPoint("main")
+                entryPoint("main.main")
             }
         }
     }
@@ -48,5 +50,27 @@ kotlin {
         }
         val nativeMain by getting
         val nativeTest by getting
+        when (val family = nativeTarget.konanTarget.family) {
+            Family.MINGW -> {
+                val mingwMain by creating {
+                    nativeMain.dependsOn(this)
+                    dependsOn(commonMain)
+                }
+                val mingwTest by creating {
+                    nativeTest.dependsOn(this)
+                }
+            }
+            Family.LINUX -> {
+                val linuxMain by creating {
+                    nativeMain.dependsOn(this)
+                    dependsOn(commonMain)
+                }
+                val linuxTest by creating {
+                    nativeTest.dependsOn(this)
+                }
+            }
+            else ->
+                throw GradleException("'$family' is not supported.")
+        }
     }
 }

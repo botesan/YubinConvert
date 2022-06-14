@@ -1,9 +1,11 @@
+package main
+
 import arguments.Options
 import arguments.getArgv
 import command.*
 
-fun main() {
-    val argv = getArgv()
+fun main(args: Array<String>) {
+    val argv = getArgv(args)
     val options = Options.parse(argv)
     if (options.isValid.not()) {
         options.printHelp()
