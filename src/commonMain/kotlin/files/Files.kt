@@ -63,6 +63,7 @@ fun fileExists(filePath: String): Boolean = memScoped {
     true
 }
 
+@OptIn(UnsafeNumber::class)
 fun fileSize(filePath: String): Int = memScoped {
     val st = alloc<stat>()
     val result = statWrapper(filePath, st.ptr)

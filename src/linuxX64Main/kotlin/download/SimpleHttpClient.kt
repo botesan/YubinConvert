@@ -6,11 +6,11 @@ import com.soywiz.korio.net.http.HttpClient
 import com.soywiz.korio.net.http.createHttpClient
 import kotlinx.coroutines.runBlocking
 
-class SimpleHttpClient {
-    class Response(val statusCode: Int, val headers: Map<String, String>, val data: ByteArray) {
-        override fun toString(): String = "Response(statusCode=$statusCode,headers=$headers,data.size=${data.size})"
-    }
-
+/**
+ * 簡易HTTPクライアント
+ * Windows以外の場合、Korioを使用する
+ */
+actual class SimpleHttpClient {
     private val client: HttpClient = createHttpClient()
 
     private fun request(method: String, url: URL): Response {
@@ -28,15 +28,19 @@ class SimpleHttpClient {
         )
     }
 
-    fun head(urlString: String): Response {
+    actual fun head(urlString: String): Response {
         val url = URL(urlString)
         checkNotNull(url.host) { "Illegal host. $url" }
         return request(method = "HEAD", url = url)
     }
 
-    fun get(urlString: String): Response {
+    actual fun get(urlString: String): Response {
         val url = URL(urlString)
         checkNotNull(url.host) { "Illegal host. $url" }
         return request(method = "GET", url = url)
+    }
+
+    actual companion object {
+        actual operator fun invoke(): SimpleHttpClient = SimpleHttpClient()
     }
 }

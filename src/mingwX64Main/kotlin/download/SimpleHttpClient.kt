@@ -8,13 +8,10 @@ import kotlinx.cinterop.*
 import platform.windows.*
 
 /**
+ * 簡易HTTPクライアント
  * Windowsの場合、Korioのhttps通信でデータが途中で切れるため、独自に処理を記述する
  */
-class SimpleHttpClient {
-    class Response(val statusCode: Int, val headers: Map<String, String>, val data: ByteArray) {
-        override fun toString(): String = "Response(statusCode=$statusCode,headers=$headers,data.size=${data.size})"
-    }
-
+actual class SimpleHttpClient {
     private fun request(method: String, url: URL): Response {
         val requestFlags: UInt = when (url.scheme) {
             "http" -> 0.convert()
@@ -32,16 +29,20 @@ class SimpleHttpClient {
         }
     }
 
-    fun head(urlString: String): Response {
+    actual fun head(urlString: String): Response {
         val url = URL(urlString)
         checkNotNull(url.host) { "Illegal host. $url" }
         return request(method = "HEAD", url = url)
     }
 
-    fun get(urlString: String): Response {
+    actual fun get(urlString: String): Response {
         val url = URL(urlString)
         checkNotNull(url.host) { "Illegal host. $url" }
         return request(method = "GET", url = url)
+    }
+
+    actual companion object {
+        actual operator fun invoke(): SimpleHttpClient = SimpleHttpClient()
     }
 }
 
@@ -110,7 +111,7 @@ class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
         handle = null
     }
 
-    fun send(): SimpleHttpClient.Response {
+    fun send(): Response {
         val handle = checkNotNull(handle) { "Already closed." }
         if (HttpSendRequestA(
                 hRequest = handle,
@@ -123,7 +124,7 @@ class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
         val statusCode = getStatusCode(handle)
         val headers = getHeaders(handle)
         val data = readBytes(handle)
-        return SimpleHttpClient.Response(statusCode, headers, data)
+        return Response(statusCode, headers, data)
     }
 
     private fun getStatusCode(handle: HINTERNET): Int = memScoped {

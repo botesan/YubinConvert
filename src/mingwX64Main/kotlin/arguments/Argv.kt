@@ -1,7 +1,10 @@
 package arguments
 
 import codepoint.asSjisSequence
-import kotlinx.cinterop.*
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.get
 import platform.posix.__argc
 import platform.posix.__argv
 
@@ -23,5 +26,4 @@ private fun CPointer<CPointerVar<ByteVar>>?.nullTerminateToByteArrays(count: Int
 private fun List<ByteArray>.toStrings(): List<String> =
     map { it.asSjisSequence().toList().toCharArray().concatToString() }
 
-@Suppress("UNUSED_PARAMETER")
-fun getArgv(args: Array<String>): List<String> = __argv.nullTerminateToByteArrays(__argc).toStrings()
+actual fun getArgv(args: Array<String>): List<String> = __argv.nullTerminateToByteArrays(__argc).toStrings()
