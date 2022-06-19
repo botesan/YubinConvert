@@ -2,7 +2,10 @@ package main
 
 import arguments.Options
 import arguments.getArgv
-import command.*
+import command.printFilenames
+import command.printKotlin
+import command.printPlatform
+import command.printSQLite3
 
 // TODO: build.gradleから反映したい
 const val PROGRAM_NAME = "YubinConvert"
@@ -17,7 +20,6 @@ fun main(args: Array<String>) {
     //
     printPlatform()
     printKotlin()
-    printKorio()
     printSQLite3()
     printFilenames(options.filenames)
     //

@@ -5,12 +5,11 @@ import com.soywiz.korio.file.std.openAsZip
 import com.soywiz.korio.stream.openAsync
 import command.DefaultFilenames
 import command.Filenames
+import extensions.unixTimeSec
 import files.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import tool.currentTimeText
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 fun unZip(filenames: Filenames) {
     println("[${currentTimeText()}] Unzip : Extract ${DefaultFilenames.csvKenAll} from ${DefaultFilenames.zipKenAll}")
@@ -23,8 +22,7 @@ fun unZip(filenames: Filenames) {
             .firstOrNull { file -> file.baseName == DefaultFilenames.csvKenAll }
             ?: error("File not found ${DefaultFilenames.csvKenAll} in ${filenames.zipKenAll}")
         val csvStatInZip = csvFileInZip.stat()
-        val csvCreateTimeSecInZip = csvStatInZip.createTime.unixMillisDouble
-            .toDuration(DurationUnit.MILLISECONDS).toLong(DurationUnit.SECONDS)
+        val csvCreateTimeSecInZip = csvStatInZip.createTime.unixTimeSec
         println("\t       (${DefaultFilenames.csvKenAll} / ${csvStatInZip.size} / $csvCreateTimeSecInZip)")
         // CSVファイル
         println("\tto   : ${filenames.csvKenAll}")

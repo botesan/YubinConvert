@@ -2,6 +2,7 @@ package ksqlite3
 
 import kotlinx.cinterop.*
 import platform.posix.memcpy
+import util.use
 
 typealias SQLite3Stmt = cnames.structs.sqlite3_stmt
 
@@ -31,6 +32,7 @@ class SQLiteException(message: String?, th: Throwable? = null) : Exception(messa
             )
 }
 
+@Suppress("unused")
 enum class SQLiteOpenType(val flag: Int) {
     ReadOnly(SQLITE_OPEN_READONLY),
     ReadWrite(SQLITE_OPEN_READWRITE),
@@ -39,8 +41,8 @@ enum class SQLiteOpenType(val flag: Int) {
 
 class SQLiteDB private constructor(
     private var dbHandle: SQLiteDBHandle?,
-    val dbPath: String,
-    val openType: SQLiteOpenType
+    @Suppress("unused") val dbPath: String,
+    @Suppress("unused") val openType: SQLiteOpenType
 ) {
     constructor(dbPath: String, openType: SQLiteOpenType) : this(
         memScoped {
@@ -121,37 +123,11 @@ inline fun <R> SQLiteDB.runInTransaction(block: SQLiteDB.() -> R): R {
     }
 }
 
-inline fun <R> SQLiteDB.use(block: (db: SQLiteDB) -> R): R {
-    var caught = false
-    try {
-        return block(this)
-    } catch (th: Throwable) {
-        caught = true
-        throw th
-    } finally {
-        try {
-            close()
-        } catch (th: Throwable) {
-            if (caught.not()) throw th
-        }
-    }
-}
+inline fun <R> SQLiteDB.use(block: (db: SQLiteDB) -> R): R =
+    use(close = SQLiteDB::close, block = block)
 
-inline fun <R> SQLiteStmtHandle.use(block: (stmt: SQLiteStmtHandle) -> R): R {
-    var caught = false
-    try {
-        return block(this)
-    } catch (th: Throwable) {
-        caught = true
-        throw th
-    } finally {
-        try {
-            close()
-        } catch (th: Throwable) {
-            if (caught.not()) throw th
-        }
-    }
-}
+inline fun <R> SQLiteStmtHandle.use(block: (stmt: SQLiteStmtHandle) -> R): R =
+    use(close = SQLiteStmtHandle::close, block = block)
 
 private fun CPointer<UByteVar>.toKString(): String =
     @Suppress("UNCHECKED_CAST")
@@ -222,21 +198,8 @@ fun SQLiteStmtHandle.close() {
     if (error != SQLITE_OK) throw SQLiteException("Cannot finalize statment", error, this)
 }
 
-private inline fun <R> SQLiteBackupHandle.use(block: (backup: SQLiteBackupHandle) -> R): R {
-    var caught = false
-    try {
-        return block(this)
-    } catch (th: Throwable) {
-        caught = true
-        throw th
-    } finally {
-        try {
-            close()
-        } catch (th: Throwable) {
-            if (caught.not()) throw th
-        }
-    }
-}
+private inline fun <R> SQLiteBackupHandle.use(block: (backup: SQLiteBackupHandle) -> R): R =
+    use(close = SQLiteBackupHandle::close, block = block)
 
 private fun SQLiteBackupHandle.close() {
     val error = sqlite3_backup_finish(this)

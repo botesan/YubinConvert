@@ -1,6 +1,5 @@
 package command
 
-import com.soywiz.korio.Korio
 import ksqlite3.SQLITE3_VERSION
 
 fun printKotlin() {
@@ -31,15 +30,6 @@ fun printSQLite3() {
         """
         |SQLite3
         |  version : $SQLITE3_VERSION
-        |""".trimMargin()
-    )
-}
-
-fun printKorio() {
-    print(
-        """
-        |Korio
-        |  version : ${Korio.VERSION}
         |""".trimMargin()
     )
 }
