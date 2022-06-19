@@ -1,15 +1,13 @@
 package ksqlite3
 
-import cnames.structs.sqlite3_stmt
 import kotlinx.cinterop.*
 import platform.posix.memcpy
-import sqlite3.*
 
-const val SQLITE3_VERSION = SQLITE_VERSION
+typealias SQLite3Stmt = cnames.structs.sqlite3_stmt
 
-private typealias SQLiteDBHandle = CPointer<sqlite3>
-private typealias SQLiteBackupHandle = CPointer<sqlite3_backup>
-typealias SQLiteStmtHandle = CPointer<sqlite3_stmt>
+private typealias SQLiteDBHandle = CPointer<SQLite3>
+private typealias SQLiteBackupHandle = CPointer<SQLite3Backup>
+typealias  SQLiteStmtHandle = CPointer<SQLite3Stmt>
 
 // 各エラーメッセージ
 class SQLiteException(message: String?, th: Throwable? = null) : Exception(message, th) {
@@ -46,7 +44,7 @@ class SQLiteDB private constructor(
 ) {
     constructor(dbPath: String, openType: SQLiteOpenType) : this(
         memScoped {
-            val dbPtr = alloc<CPointerVar<sqlite3>>()
+            val dbPtr = alloc<CPointerVar<SQLite3>>()
             val error = sqlite3_open_v2(dbPath, dbPtr.ptr, openType.flag, null)
             if (error != SQLITE_OK) {
                 throw SQLiteException("Cannot open db[file=$dbPath]", error, dbPtr.value)
@@ -58,7 +56,7 @@ class SQLiteDB private constructor(
     )
 
     fun prepare(sql: String): SQLiteStmtHandle = memScoped {
-        val stmtPtr = alloc<CPointerVar<sqlite3_stmt>>()
+        val stmtPtr = alloc<CPointerVar<SQLite3Stmt>>()
         val error = sqlite3_prepare_v2(dbHandle, sql, -1, stmtPtr.ptr, null)
         if (error != SQLITE_OK) {
             throw SQLiteException("Cannot compile statment[sql=$sql]", error, dbHandle)

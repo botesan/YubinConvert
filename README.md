@@ -9,9 +9,25 @@ https://play.google.com/store/apps/details?id=jp.mito.jpzipaddress
 Kotlin/Nativeで記述しており、Windowsでビルドできることを確認しています。
 
 ## 実行方法
-下記ダウンロードしたken_all.zipと展開したKEN_ALL.CSVの**両方**を、作業ディレクトリに置いて実行します。
+下記からken_all.zipをダウンロードし、作業ディレクトリに変換ファイルを出力します。
 https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
-> $ YubinConvert.exe <作業ディレクトリ>
+```
+YubinConvert -d _作業ディレクトリ_ all
+```
+詳しいコマンドライン引数は下記を参照
+```
+usage:
+    YubinConvert.exe [options] {all|download|unzip|convert}...
+
+options:
+    -d &lt;dir&gt; : 作業ディレクトリを指定します
+
+commands:
+    all      : ダウンロードと展開、変換を行います
+    download : ken_all.zipをダウンロードします
+    unzip    : ken_all.zipを展開します
+    convert  : KEN_ALL.CSVファイルを変換します
+```
 
 ## 出力ファイル
 - ken_all.sqlite
