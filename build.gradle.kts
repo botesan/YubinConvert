@@ -1,4 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
 buildscript {
@@ -38,6 +40,36 @@ kotlin {
     }
     */
 
+    fun getGenerateProgramNameSourcePath(target: KotlinNativeTarget): File {
+        val generateProgramNameSourceBaseDir = project.buildDir.resolve(relative = "generated/src")
+        val sourceFilePath = "${target.name}Main/kotlin/ProgramName.kt"
+        return generateProgramNameSourceBaseDir.resolve(relative = sourceFilePath)
+    }
+
+    fun createGenerateProgramNameSourceTask(target: KotlinNativeTarget, baseName: String) {
+        val targetNameCapitalized = target.name.capitalized()
+        val createTaskName = "generateProgramNameSource$targetNameCapitalized"
+        val compileTaskName = "compileKotlin$targetNameCapitalized"
+        val compileTask = tasks.findByName(compileTaskName)
+        if (compileTask != null && tasks.findByName(createTaskName) == null) {
+            val outputSourceFile = getGenerateProgramNameSourcePath(target)
+            val exeSuffix = target.konanTarget.family.exeSuffix
+            val programName = "$baseName.$exeSuffix"
+            tasks.create(name = createTaskName) {
+                compileTask.dependsOn(this)
+                doLast {
+                    outputSourceFile.parentFile.mkdirs()
+                    outputSourceFile.writeText(
+                        """
+                        |package main
+                        |actual val PROGRAM_NAME: String = "$programName"
+                        |""".trimMargin()
+                    )
+                }
+            }
+        }
+    }
+
     fun createNativeConfigure(
         configure: KotlinNativeTargetWithHostTests.() -> Unit = {}
     ): KotlinNativeTargetWithHostTests.() -> Unit = {
@@ -53,13 +85,14 @@ kotlin {
             }
             executable {
                 entryPoint("main.main")
+                createGenerateProgramNameSourceTask(target, baseName)
             }
         }
         configure()
     }
 
-    mingwX64(configure = createNativeConfigure())
-    linuxX64(configure = createNativeConfigure())
+    val mingwX64 = mingwX64(configure = createNativeConfigure())
+    val linuxX64 = linuxX64(configure = createNativeConfigure())
     //macosX64(configure =  createNativeConfigure())
 
     @Suppress("UNUSED_VARIABLE")
@@ -70,10 +103,16 @@ kotlin {
             }
         }
         val mingwX64Main by getting {
-            kotlin.srcDir(project.file("src/nativeMain/kotlin"))
+            kotlin.srcDirs(
+                project.file("src/nativeMain/kotlin"),
+                getGenerateProgramNameSourcePath(target = mingwX64).parentFile,
+            )
         }
         val linuxX64Main by getting {
-            kotlin.srcDir(project.file("src/nativeMain/kotlin"))
+            kotlin.srcDirs(
+                project.file("src/nativeMain/kotlin"),
+                getGenerateProgramNameSourcePath(target = linuxX64).parentFile,
+            )
         }
         //val macosX64Main by getting
     }

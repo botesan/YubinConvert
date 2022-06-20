@@ -7,8 +7,7 @@ import command.printKotlin
 import command.printPlatform
 import command.printSQLite3
 
-// TODO: build.gradleから反映したい
-const val PROGRAM_NAME = "YubinConvert"
+expect val PROGRAM_NAME: String
 
 fun main(args: Array<String>) {
     val argv = getArgv(args)
