@@ -4,14 +4,18 @@ import com.soywiz.korio.file.baseName
 import com.soywiz.korio.file.std.openAsZip
 import com.soywiz.korio.stream.openAsync
 import command.DefaultFilenames
-import command.Filenames
 import extensions.unixTimeSec
 import files.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import tool.currentTimeText
 
-fun unZip(filenames: Filenames) {
+interface UnZipFilenames {
+    val zipKenAll: String
+    val csvKenAll: String
+}
+
+fun unZip(filenames: UnZipFilenames) {
     println("[${currentTimeText()}] Unzip : Extract ${DefaultFilenames.csvKenAll} from ${DefaultFilenames.zipKenAll}")
     runBlocking {
         // ZIPファイル

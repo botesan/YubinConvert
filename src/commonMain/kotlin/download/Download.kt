@@ -3,14 +3,17 @@ package download
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.parse
 import command.DefaultFilenames
-import command.Filenames
 import extensions.unixTimeSec
 import files.*
 import tool.currentTimeText
 
+interface DownloadFilenames {
+    val zipKenAll: String
+}
+
 private val url = "https://www.post.japanpost.jp/zipcode/dl/kogaki/zip/${DefaultFilenames.zipKenAll}"
 
-fun download(filenames: Filenames) {
+fun download(filenames: DownloadFilenames) {
     println("[${currentTimeText()}] Download from $url")
     // 情報取得
     val client = SimpleHttpClient()

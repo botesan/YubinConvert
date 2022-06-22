@@ -22,5 +22,5 @@ fun main(args: Array<String>) {
     printSQLite3()
     printFilenames(options.filenames)
     //
-    options.commands.forEach { it.exec(options.filenames) }
+    options.commands.forEach { it.exec(options) }
 }

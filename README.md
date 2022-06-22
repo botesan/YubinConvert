@@ -17,16 +17,19 @@ YubinConvert -d _作業ディレクトリ_ all
 詳しいコマンドライン引数は下記を参照
 ```
 usage:
-    YubinConvert.exe [options] {all|download|unzip|convert}...
+    YubinConvert.exe [options] {all|download|unzip|convert|compress}...
 
 options:
-    -d &lt;dir&gt; : 作業ディレクトリを指定します
+    -d  <dir> : 作業ディレクトリを指定します
+    -zi <num> : zopfliのiterator値指定
+    -zb <num> : zopfliのblock splitting max値の指定
 
 commands:
     all      : ダウンロードと展開、変換を行います
     download : ken_all.zipをダウンロードします
     unzip    : ken_all.zipを展開します
     convert  : KEN_ALL.CSVファイルを変換します
+    compress : 変換したx_ken_all.sqliteをzopfliで圧縮します
 ```
 
 ## 出力ファイル

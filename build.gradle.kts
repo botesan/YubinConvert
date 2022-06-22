@@ -78,6 +78,11 @@ kotlin {
             val sqlite3 by creating {
                 includeDirs(project.file("src/sqlite-amalgamation-$sqlite3Version"))
             }
+
+            @Suppress("SpellCheckingInspection")
+            val zopfli by creating {
+                includeDirs(project.file("zopfli/src/zopfli"))
+            }
         }
         binaries {
             all {

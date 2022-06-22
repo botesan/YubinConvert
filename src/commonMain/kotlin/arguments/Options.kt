@@ -6,12 +6,16 @@ import main.PROGRAM_NAME
 /**
  * @property program プログラム名
  * @property workDirectory 作業ディレクトリ
+ * @property numIterations zopfliのnumIterations（負値は未設定）
+ * @property blockSplittingMax zopfliのblockSplittingMax（負値は未設定）
  * @property commands コマンド群
  */
 data class Options(
     val program: String,
-    val workDirectory: String,
     val commands: List<Command>,
+    val workDirectory: String,
+    val numIterations: Int?,
+    val blockSplittingMax: Int?,
     val isValid: Boolean,
 ) {
     val filenames: Filenames = when {
@@ -21,29 +25,38 @@ data class Options(
 
     private constructor(
         program: String,
-        workDirectory: String?,
         commands: List<Command>,
+        numIterations: Int?,
+        blockSplittingMax: Int?,
+        workDirectory: String?,
     ) : this(
         program = program.ifEmpty { PROGRAM_NAME },
-        workDirectory = workDirectory ?: "",
         commands = commands,
-        isValid = workDirectory != null && commands.isNotEmpty(),
+        workDirectory = workDirectory ?: "",
+        numIterations = numIterations,
+        blockSplittingMax = blockSplittingMax,
+        isValid = workDirectory != null && commands.isNotEmpty()
+                && (numIterations == null || numIterations >= 1)
+                && (blockSplittingMax == null || blockSplittingMax >= 0)
     )
 
     fun printHelp() {
         print(
             """
             |usage:
-            |    $program [options] {all|download|unzip|convert}...
+            |    $program [options] {all|download|unzip|convert|compress}...
             |
             |options:
-            |    -d <dir> : 作業ディレクトリを指定します
+            |    -d  <dir> : 作業ディレクトリを指定します
+            |    -zi <num> : zopfliのiterator値指定
+            |    -zb <num> : zopfliのblock splitting max値の指定
             |
             |commands:
             |    all      : ダウンロードと展開、変換を行います
             |    download : ken_all.zipをダウンロードします
             |    unzip    : ken_all.zipを展開します
             |    convert  : KEN_ALL.CSVファイルを変換します
+            |    compress : 変換したx_ken_all.sqliteをzopfliで圧縮します
             |""".trimMargin()
         )
     }
@@ -53,8 +66,10 @@ data class Options(
             require(argv.isNotEmpty()) { "Require argv is not empty." }
             //
             val program = argv[0].split('/', '\\').last()
-            var workDirectory: String? = ""
             val commands = mutableListOf<Command>()
+            var workDirectory: String? = ""
+            var numIterations: Int? = null
+            var blockSplittingMax: Int? = null
             //
             argv.drop(n = 1).iterator().also { itr ->
                 while (itr.hasNext()) {
@@ -66,6 +81,30 @@ data class Options(
                                 break
                             } else {
                                 workDirectory = itr.next()
+                            }
+                        "-zi" ->
+                            if (itr.hasNext().not()) {
+                                println("Not set num iterations value.")
+                                numIterations = null
+                                break
+                            } else {
+                                numIterations = itr.next().toIntOrNull()
+                                if (numIterations == null) {
+                                    println("Can not parse num iterations value.")
+                                    break
+                                }
+                            }
+                        "-zb" ->
+                            if (itr.hasNext().not()) {
+                                println("Not set block splitting max value.")
+                                blockSplittingMax = null
+                                break
+                            } else {
+                                blockSplittingMax = itr.next().toIntOrNull()
+                                if (blockSplittingMax == null) {
+                                    println("Can not parse block splitting max value.")
+                                    break
+                                }
                             }
                         else -> {
                             val command = getCommand(name = arg)
@@ -85,8 +124,10 @@ data class Options(
             //
             return Options(
                 program = program,
-                workDirectory = workDirectory,
                 commands = commands,
+                workDirectory = workDirectory,
+                numIterations = numIterations,
+                blockSplittingMax = blockSplittingMax,
             )
         }
     }
