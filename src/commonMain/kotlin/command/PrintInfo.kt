@@ -42,6 +42,7 @@ fun printFilenames(filenames: Filenames) {
         |  CSV : ${filenames.csvKenAll}
         |  DB1 : ${filenames.dbKenAll}
         |  DB2 : ${filenames.dbXKenAll}
+        |  GZ  : ${filenames.gzDbXKenAll}
         |""".trimMargin()
     )
 }

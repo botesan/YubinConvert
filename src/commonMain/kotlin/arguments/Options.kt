@@ -44,7 +44,7 @@ data class Options(
         print(
             """
             |usage:
-            |    $program [options] {all|download|unzip|convert|compress}...
+            |    $program [options] {all|download|unzip|convert|compress|info}...
             |
             |options:
             |    -d  <dir> : 作業ディレクトリを指定します
@@ -52,11 +52,12 @@ data class Options(
             |    -zb <num> : zopfliのblock splitting max値の指定
             |
             |commands:
-            |    all      : ダウンロードと展開、変換を行います
+            |    all      : ダウンロードと展開、変換を行います（download,unzip,convertのみ）
             |    download : ken_all.zipをダウンロードします
             |    unzip    : ken_all.zipを展開します
             |    convert  : KEN_ALL.CSVファイルを変換します
             |    compress : 変換したx_ken_all.sqliteをzopfliで圧縮します
+            |    info     : 各ファイルのMD5サム値などを表示します
             |""".trimMargin()
         )
     }
@@ -66,7 +67,7 @@ data class Options(
             require(argv.isNotEmpty()) { "Require argv is not empty." }
             //
             val program = argv[0].split('/', '\\').last()
-            val commands = mutableListOf<Command>()
+            val commands = LinkedHashSet<Command>()
             var workDirectory: String? = ""
             var numIterations: Int? = null
             var blockSplittingMax: Int? = null
@@ -124,7 +125,7 @@ data class Options(
             //
             return Options(
                 program = program,
-                commands = commands,
+                commands = commands.toList(),
                 workDirectory = workDirectory,
                 numIterations = numIterations,
                 blockSplittingMax = blockSplittingMax,

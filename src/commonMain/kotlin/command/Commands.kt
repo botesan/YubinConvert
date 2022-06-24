@@ -5,9 +5,10 @@ import compress.compress
 import convert.csvConvert
 import convert.dbConvert
 import download.download
+import info.info
 import unzip.unZip
 
-private val name2Command = (All.commands + All + Compress).associateBy { it.name }
+private val name2Command = (All.commands + All + Compress + Info).associateBy { it.name }
 
 fun getCommand(name: String): Command? = name2Command[name]
 
@@ -45,5 +46,12 @@ object Compress : Command {
             numIterations = options.numIterations,
             blockSplittingMax = options.blockSplittingMax,
         )
+    }
+}
+
+object Info : Command {
+    override val name: String = "info"
+    override fun exec(options: Options) {
+        info(options.filenames)
     }
 }
