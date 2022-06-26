@@ -6,6 +6,7 @@ buildscript {
     repositories {
         mavenCentral()
     }
+
     dependencies {
         classpath("com.github.ben-manes:gradle-versions-plugin:0.52.0")
     }
@@ -91,14 +92,29 @@ kotlin {
     //macosX64(configure =  createNativeConfigure())
 
     sourceSets {
+        val ktorVersion = "3.1.2"
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
                 implementation("com.soywiz.korlibs.korio:korio:4.0.10")
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
             }
         }
-        val mingwX64Main by getting { kotlin.srcDirs(getGenerateProgramNameSourcePath(target = mingwX64).parentFile) }
-        val linuxX64Main by getting { kotlin.srcDirs(getGenerateProgramNameSourcePath(target = linuxX64).parentFile) }
+        val mingwX64Main by getting {
+            kotlin.srcDirs(getGenerateProgramNameSourcePath(target = mingwX64).parentFile)
+            dependencies {
+                implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
+            }
+        }
+        val linuxX64Main by getting {
+            kotlin.srcDirs(getGenerateProgramNameSourcePath(target = linuxX64).parentFile)
+            dependencies {
+                // ktor & curl が windows ホストでビルドエラー（リンクエラー？）
+                implementation("io.ktor:ktor-client-curl:$ktorVersion")
+                // ktor & cio は https 通信ができない
+                //implementation("io.ktor:ktor-client-cio:$ktorVersion")
+            }
+        }
         //val macosX64Main by getting
     }
 }

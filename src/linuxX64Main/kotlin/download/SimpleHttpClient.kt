@@ -1,45 +1,12 @@
 package download
 
-import korlibs.io.net.URL
-import korlibs.io.net.http.Http
-import korlibs.io.net.http.HttpClient
-import korlibs.io.net.http.createHttpClient
-import kotlinx.coroutines.runBlocking
+import io.ktor.client.*
+import io.ktor.client.engine.curl.*
 
-/**
- * 簡易HTTPクライアント
- * Windows以外の場合、Korioを使用する
- */
+/** 簡易HTTPクライアント */
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class SimpleHttpClient {
-    private val client: HttpClient = createHttpClient()
-
-    private fun request(method: String, url: URL): Response {
-        val response = when (method) {
-            "HEAD" -> Http.Method.HEAD
-            "GET" -> Http.Method.GET
-            else -> error("Not support method. $method")
-        }.let { httpMethod ->
-            runBlocking { client.requestAsBytes(method = httpMethod, url = url.toUrlString().toString()) }
-        }
-        return Response(
-            statusCode = response.status,
-            headers = response.headers.toMap(),
-            data = response.content
-        )
-    }
-
-    actual fun head(urlString: String): Response {
-        val url = URL(urlString)
-        checkNotNull(url.host) { "Illegal host. $url" }
-        return request(method = "HEAD", url = url)
-    }
-
-    actual fun get(urlString: String): Response {
-        val url = URL(urlString)
-        checkNotNull(url.host) { "Illegal host. $url" }
-        return request(method = "GET", url = url)
-    }
+    actual val client: HttpClient = HttpClient(Curl)
 
     actual companion object {
         actual operator fun invoke(): SimpleHttpClient = SimpleHttpClient()

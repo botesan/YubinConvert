@@ -9,11 +9,15 @@ https://play.google.com/store/apps/details?id=jp.mito.jpzipaddress
 
 ## ビルド
 
-Kotlin/Nativeで記述しており、Windowsでビルドできることを確認しています。
+Kotlin/Nativeで記述しており、WindowsでWindowsバイナリをビルドできることを確認しています。
+WindowsではLinuxバイナリのビルドに失敗しますが 、WSL1のUbuntuでWindowsとLinuxバイナリをビルドできることを確認しています。
+
+Linuxではlibcurlのgnutlsバージョンが必要になるかもしれません。
+https://ktor.io/docs/client-engines.html#curl
 
 ## 実行方法
 
-下記からken_all.zipをダウンロードし、作業ディレクトリに変換ファイルを出力します。
+郵便局のサイトからken_all.zipをダウンロードし、作業ディレクトリに変換ファイルを出力します。
 https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
 
 ```

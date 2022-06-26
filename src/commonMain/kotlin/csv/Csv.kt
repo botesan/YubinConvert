@@ -6,8 +6,8 @@ private fun Sequence<CsvToken>.asCsvSequence() = CsvSequence(this)
 private fun Sequence<Char>.asCsvTokenSequence() = CsvTokenSequence(this)
 
 private sealed class CsvToken {
-    object Delim : CsvToken()
-    object LineBreak : CsvToken()
+    data object Deliminator : CsvToken()
+    data object LineBreak : CsvToken()
     class Escaped(val text: String) : CsvToken()
     class NonEscaped(val text: String) : CsvToken()
 }
@@ -22,7 +22,7 @@ private class CsvIterator(private val iterator: Iterator<CsvToken>) : Iterator<L
         val row = arrayListOf("")
         loop@ while (iterator.hasNext()) {
             when (val token = iterator.next()) {
-                CsvToken.Delim -> row.add("")
+                CsvToken.Deliminator -> row.add("")
                 CsvToken.LineBreak -> break@loop
                 is CsvToken.NonEscaped -> row[row.lastIndex] = token.text
                 is CsvToken.Escaped -> row[row.lastIndex] = token.text
@@ -54,7 +54,7 @@ private class CsvTokenIterator(private val iterator: Iterator<Char>) : Iterator<
         remain = null
         return when (ch) {
             // delim
-            COMMA -> CsvToken.Delim
+            COMMA -> CsvToken.Deliminator
             // line break
             CR -> {
                 if (iterator.hasNext().not()) error("Cannot parse csv. Nothing next CR.")
@@ -66,6 +66,7 @@ private class CsvTokenIterator(private val iterator: Iterator<Char>) : Iterator<
                     CsvToken.LineBreak
                 }
             }
+
             LF -> CsvToken.LineBreak
             // non escaped
             DOUBLE_QUOT -> {
