@@ -12,7 +12,7 @@ Kotlin/Nativeで記述しており、Windowsでビルドできることを確認
 下記からken_all.zipをダウンロードし、作業ディレクトリに変換ファイルを出力します。
 https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
 ```
-YubinConvert -d _作業ディレクトリ_ all
+YubinConvert.exe -d [作業ディレクトリ] all
 ```
 詳しいコマンドライン引数は下記を参照
 ```

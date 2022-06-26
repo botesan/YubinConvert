@@ -76,7 +76,7 @@ kotlin {
         @Suppress("UNUSED_VARIABLE")
         compilations["main"].cinterops {
             val sqlite3 by creating {
-                includeDirs(project.file("src/sqlite-amalgamation-$sqlite3Version"))
+                includeDirs(project.file("sqlite-amalgamation-$sqlite3Version"))
             }
 
             @Suppress("SpellCheckingInspection")
@@ -104,6 +104,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
                 implementation("com.soywiz.korlibs.korio:korio:2.7.0")
             }
         }
