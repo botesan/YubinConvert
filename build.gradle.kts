@@ -27,7 +27,7 @@ repositories {
 
 kotlin {
     /** SQLite3のバージョン */
-    val sqlite3Version = "3380500"
+    val sqlite3Version = "3390000"
 
     /*
     val hostOs = System.getProperty("os.name")
