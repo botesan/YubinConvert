@@ -28,7 +28,7 @@ private fun infoModifiedTime(filePath: String) {
         val modifiedTimeMillis = fileModifiedTimeSec(filePath)
             .toDuration(DurationUnit.SECONDS)
             .toLong(DurationUnit.MILLISECONDS)
-        val modifiedTime = DateTime.fromUnix(modifiedTimeMillis).local
+        val modifiedTime = DateTime.fromUnixMillis(modifiedTimeMillis).local
         val modifiedTimeText = DateFormat.FORMAT1.format(modifiedTime)
         println(" $modifiedTimeText $modifiedTimeMillis")
     }

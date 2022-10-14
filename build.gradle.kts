@@ -15,7 +15,7 @@ buildscript {
 apply(plugin = "com.github.ben-manes.versions")
 
 plugins {
-    kotlin("multiplatform") version "1.7.0"
+    kotlin("multiplatform") version "1.7.20"
 }
 
 group = "jp.mito.yconvert"
@@ -27,7 +27,7 @@ repositories {
 
 kotlin {
     /** SQLite3のバージョン */
-    val sqlite3Version = "3390000"
+    val sqlite3Version = "3390400"
 
     /*
     val hostOs = System.getProperty("os.name")
@@ -104,9 +104,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
-                implementation("com.soywiz.korlibs.korio:korio:2.7.0")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("com.soywiz.korlibs.korio:korio:3.2.0")
             }
         }
         val mingwX64Main by getting {
