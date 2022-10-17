@@ -12,21 +12,25 @@ Kotlin/Nativeで記述しており、Windowsでビルドできることを確認
 下記からken_all.zipをダウンロードし、作業ディレクトリに変換ファイルを出力します。
 https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
 ```
-YubinConvert -d _作業ディレクトリ_ all
+YubinConvert.exe -d [作業ディレクトリ] all
 ```
 詳しいコマンドライン引数は下記を参照
 ```
 usage:
-    YubinConvert.exe [options] {all|download|unzip|convert}...
+    YubinConvert.exe [options] {all|download|unzip|convert|compress|info}...
 
 options:
-    -d &lt;dir&gt; : 作業ディレクトリを指定します
+    -d  <dir> : 作業ディレクトリを指定します
+    -zi <num> : zopfliのiterator値指定
+    -zb <num> : zopfliのblock splitting max値の指定
 
 commands:
-    all      : ダウンロードと展開、変換を行います
+    all      : ダウンロードと展開、変換を行います（download,unzip,convertのみ）
     download : ken_all.zipをダウンロードします
     unzip    : ken_all.zipを展開します
     convert  : KEN_ALL.CSVファイルを変換します
+    compress : 変換したx_ken_all.sqliteをzopfliで圧縮します
+    info     : 各ファイルのMD5サム値などを表示します
 ```
 
 ## 出力ファイル

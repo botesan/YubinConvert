@@ -1,11 +1,11 @@
 package download
 
 import com.soywiz.kmem.ByteArrayBuilder
-import com.soywiz.korio.lang.Closeable
-import com.soywiz.korio.lang.use
 import com.soywiz.korio.net.URL
 import kotlinx.cinterop.*
 import platform.windows.*
+import util.Closeable
+import util.use
 
 /**
  * 簡易HTTPクライアント

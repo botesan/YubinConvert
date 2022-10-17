@@ -7,8 +7,7 @@ fun readFile(filePath: String): ByteArray {
     val size = fileSize(filePath)
     if (size < 0) error("Illegal size file[filePath=$filePath, size=$size]")
     //
-    val fp = fopenWrapper(filePath, "rb")
-    if (fp == NULL) error("File open error[filePath=$filePath]")
+    val fp = fopenWrapper(filePath, "rb") ?: error("File open error[filePath=$filePath]")
     //
     try {
         val buffer = ByteArray(size)
@@ -37,8 +36,7 @@ fun readFile(filePath: String): ByteArray {
 }
 
 fun writeFile(filePath: String, data: ByteArray) {
-    val fp = fopenWrapper(filePath, "wb")
-    if (fp == NULL) error("File open error[filePath=$filePath]")
+    val fp = fopenWrapper(filePath, "wb") ?: error("File open error[filePath=$filePath]")
     //
     try {
         data.usePinned { pinned ->

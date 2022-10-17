@@ -1,6 +1,5 @@
 package command
 
-import com.soywiz.korio.Korio
 import ksqlite3.SQLITE3_VERSION
 
 fun printKotlin() {
@@ -35,15 +34,6 @@ fun printSQLite3() {
     )
 }
 
-fun printKorio() {
-    print(
-        """
-        |Korio
-        |  version : ${Korio.VERSION}
-        |""".trimMargin()
-    )
-}
-
 fun printFilenames(filenames: Filenames) {
     print(
         """
@@ -52,6 +42,7 @@ fun printFilenames(filenames: Filenames) {
         |  CSV : ${filenames.csvKenAll}
         |  DB1 : ${filenames.dbKenAll}
         |  DB2 : ${filenames.dbXKenAll}
+        |  GZ  : ${filenames.gzDbXKenAll}
         |""".trimMargin()
     )
 }

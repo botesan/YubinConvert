@@ -1,12 +1,14 @@
 package command
 
+import arguments.Options
+
 interface Command {
     val name: String
-    fun exec(filenames: Filenames)
+    fun exec(options: Options)
 }
 
 abstract class CommandList(val commands: List<Command>) : Command {
-    override fun exec(filenames: Filenames) {
-        commands.forEach { it.exec(filenames) }
+    override fun exec(options: Options) {
+        commands.forEach { it.exec(options) }
     }
 }

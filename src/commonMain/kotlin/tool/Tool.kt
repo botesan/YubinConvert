@@ -28,6 +28,9 @@ fun String.trimSql() = trim()
     .splitToSequence(" || ").joinTo(StringBuilder(length), "||")
     .toString()
 
+// FIXME: 各SQLインジェクション対応が必要
+//  使用範囲が限られているため現状実施せず
+
 // language=sql
 fun SQLiteDB.dropIfExists(kind: String, name: String) = execute("drop $kind if exists $name")
 fun SQLiteDB.dropTableIfExists(name: String) = dropIfExists("table", name)

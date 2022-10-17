@@ -1,0 +1,23 @@
+depends = posix
+package = zopfli
+linkerOpts.linux = -lc
+
+---
+#include "util.c"
+
+#include "katajainen.c"
+#include "tree.c"
+
+#include "squeeze.c"
+#include "blocksplitter.c"
+
+#include "cache.c"
+#include "hash.c"
+#include "lz77.c"
+
+#include "deflate.c"
+
+#include "gzip_container.c"
+#include "zlib_container.c"
+
+#include "zopfli_lib.c"
