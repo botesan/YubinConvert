@@ -1,12 +1,12 @@
 package info
 
-import com.soywiz.klock.DateFormat
-import com.soywiz.klock.DateTime
-import com.soywiz.krypto.md5
 import command.Filenames
 import files.fileExists
 import files.fileModifiedTimeSec
 import files.readFile
+import korlibs.crypto.md5
+import korlibs.time.DateFormat
+import korlibs.time.DateTime
 import tool.currentTimeText
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration

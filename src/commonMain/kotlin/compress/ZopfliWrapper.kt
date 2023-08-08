@@ -2,11 +2,9 @@
 
 package compress
 
-import kotlinx.cinterop.CPointerVar
-import kotlinx.cinterop.CStructVar
-import kotlinx.cinterop.CValuesRef
-import kotlinx.cinterop.UByteVar
+import kotlinx.cinterop.*
 
+@OptIn(ExperimentalForeignApi::class)
 expect class ZopfliOptions : CStructVar
 
 expect var ZopfliOptions.blockSplitting: Int
@@ -18,6 +16,7 @@ expect var ZopfliOptions.numIterations: Int
 expect var ZopfliOptions.verbose: Int
 expect var ZopfliOptions.verboseMore: Int
 
+@OptIn(ExperimentalForeignApi::class)
 expect fun ZopfliInitOptions(options: CValuesRef<ZopfliOptions>?)
 
 expect enum class ZopfliFormat
@@ -26,6 +25,7 @@ expect val ZOPFLI_FORMAT_GZIP: ZopfliFormat
 expect val ZOPFLI_FORMAT_ZLIB: ZopfliFormat
 expect val ZOPFLI_FORMAT_DEFLATE: ZopfliFormat
 
+@OptIn(ExperimentalForeignApi::class)
 expect fun ZopfliCompress(
     options: CValuesRef<ZopfliOptions>?,
     outputType: ZopfliFormat,

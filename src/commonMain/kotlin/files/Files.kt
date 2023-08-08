@@ -3,6 +3,7 @@ package files
 import kotlinx.cinterop.*
 import platform.posix.*
 
+@OptIn(ExperimentalForeignApi::class)
 fun readFile(filePath: String): ByteArray {
     val size = fileSize(filePath)
     if (size < 0) error("Illegal size file[filePath=$filePath, size=$size]")
@@ -16,7 +17,7 @@ fun readFile(filePath: String): ByteArray {
             while (true) {
                 val remain = buffer.size - count
                 if (remain == 0) break
-                val result = fread(pinned.addressOf(count), 1, remain.convert(), fp)
+                val result = fread(pinned.addressOf(count), 1U, remain.convert(), fp)
                 if (result == 0UL) {
                     val error = ferror(fp)
                     val eof = feof(fp)
@@ -35,12 +36,13 @@ fun readFile(filePath: String): ByteArray {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun writeFile(filePath: String, data: ByteArray) {
     val fp = fopenWrapper(filePath, "wb") ?: error("File open error[filePath=$filePath]")
     //
     try {
         data.usePinned { pinned ->
-            val result = fwrite(pinned.addressOf(0), 1, data.size.convert(), fp)
+            val result = fwrite(pinned.addressOf(0), 1U, data.size.convert(), fp)
             if (result < data.size.convert()) {
                 val error = ferror(fp)
                 error("File write error[filePath=$filePath, error=$error, errno=$errno]")
@@ -51,6 +53,7 @@ fun writeFile(filePath: String, data: ByteArray) {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun fileExists(filePath: String): Boolean = memScoped {
     val st = alloc<stat>()
     val result = statWrapper(filePath, st.ptr)
@@ -61,7 +64,7 @@ fun fileExists(filePath: String): Boolean = memScoped {
     true
 }
 
-@OptIn(UnsafeNumber::class)
+@OptIn(UnsafeNumber::class, ExperimentalForeignApi::class)
 fun fileSize(filePath: String): Int = memScoped {
     val st = alloc<stat>()
     val result = statWrapper(filePath, st.ptr)
@@ -69,6 +72,7 @@ fun fileSize(filePath: String): Int = memScoped {
     st.st_size.convert()
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun fileModifiedTimeSec(filePath: String): Long = memScoped {
     val st = alloc<stat>()
     val result = statWrapper(filePath, st.ptr)
@@ -76,6 +80,7 @@ fun fileModifiedTimeSec(filePath: String): Long = memScoped {
     st.modifiedTimeSec
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun setFileModifiedTimeSec(filePath: String, modifiedTimeSec: Long) = memScoped {
     val st = alloc<stat>()
     if (statWrapper(filePath, st.ptr) != 0) {

@@ -6,11 +6,15 @@ import util.use
 
 typealias SQLite3Stmt = cnames.structs.sqlite3_stmt
 
+@OptIn(ExperimentalForeignApi::class)
 private typealias SQLiteDBHandle = CPointer<SQLite3>
+@OptIn(ExperimentalForeignApi::class)
 private typealias SQLiteBackupHandle = CPointer<SQLite3Backup>
-typealias  SQLiteStmtHandle = CPointer<SQLite3Stmt>
+@OptIn(ExperimentalForeignApi::class)
+typealias SQLiteStmtHandle = CPointer<SQLite3Stmt>
 
 // 各エラーメッセージ
+@OptIn(ExperimentalForeignApi::class)
 class SQLiteException(message: String?, th: Throwable? = null) : Exception(message, th) {
     private constructor(message: String, msg: String?, err: String?, th: Throwable?) :
             this(if (msg == err) "$message:$msg" else "$message:$msg:$err", th)
@@ -39,6 +43,7 @@ enum class SQLiteOpenType(val flag: Int) {
     ReadWriteCreate(SQLITE_OPEN_READWRITE or SQLITE_OPEN_CREATE),
 }
 
+@OptIn(ExperimentalForeignApi::class)
 class SQLiteDB private constructor(
     private var dbHandle: SQLiteDBHandle?,
     @Suppress("unused") val dbPath: String,
@@ -105,16 +110,13 @@ class SQLiteDB private constructor(
 }
 
 inline fun <R> SQLiteDB.runInTransaction(block: SQLiteDB.() -> R): R {
-    // language=sql
     execute("begin transaction")
     try {
         val result = block()
-        // language=sql
         execute("commit transaction")
         return result
     } catch (th: Throwable) {
         try {
-            // language=sql
             execute("rollback transaction")
         } catch (th2: Throwable) {
             throw SQLiteException("Rollback failed[$th2]", th)
@@ -126,13 +128,16 @@ inline fun <R> SQLiteDB.runInTransaction(block: SQLiteDB.() -> R): R {
 inline fun <R> SQLiteDB.use(block: (db: SQLiteDB) -> R): R =
     use(close = SQLiteDB::close, block = block)
 
+@OptIn(ExperimentalForeignApi::class)
 inline fun <R> SQLiteStmtHandle.use(block: (stmt: SQLiteStmtHandle) -> R): R =
     use(close = SQLiteStmtHandle::close, block = block)
 
+@OptIn(ExperimentalForeignApi::class)
 private fun CPointer<UByteVar>.toKString(): String =
     @Suppress("UNCHECKED_CAST")
     (this as CPointer<ByteVar>).toKString()
 
+@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteStmtHandle.column(i: Int): Any? {
     return when (val type = sqlite3_column_type(this, i)) {
         SQLITE_NULL -> null
@@ -147,12 +152,15 @@ private fun SQLiteStmtHandle.column(i: Int): Any? {
                 }
             }
         }
+
         else -> throw SQLiteException("Unkown type[type=$type]")
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun SQLiteStmtHandle.execute() = rowEach { _, _ -> true }
 
+@OptIn(ExperimentalForeignApi::class)
 fun SQLiteStmtHandle.rowEach(block: (header: List<String>, row: List<Any?>) -> Boolean) {
     val colCount = sqlite3_column_count(this)
     val header = mutableListOf<String>().also { list ->
@@ -169,16 +177,19 @@ fun SQLiteStmtHandle.rowEach(block: (header: List<String>, row: List<Any?>) -> B
                 val next = block(header, row)
                 if (next.not()) return
             }
+
             else -> throw SQLiteException("Cannot step", error, this)
         }
     } while (error != SQLITE_DONE)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun SQLiteStmtHandle.reset() {
     val error = sqlite3_reset(this)
     if (error != SQLITE_OK) throw SQLiteException("Cannot reset statment", error, this)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun SQLiteStmtHandle.bind(number: Int, value: Long) {
     val error = sqlite3_bind_int64(this, number, value)
     if (error != SQLITE_OK) {
@@ -186,6 +197,7 @@ fun SQLiteStmtHandle.bind(number: Int, value: Long) {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun SQLiteStmtHandle.bind(number: Int, value: String) {
     val error = sqlite3_bind_text_wrapper(this, number, value)
     if (error != SQLITE_OK) {
@@ -193,14 +205,17 @@ fun SQLiteStmtHandle.bind(number: Int, value: String) {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 fun SQLiteStmtHandle.close() {
     val error = sqlite3_finalize(this)
     if (error != SQLITE_OK) throw SQLiteException("Cannot finalize statment", error, this)
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private inline fun <R> SQLiteBackupHandle.use(block: (backup: SQLiteBackupHandle) -> R): R =
     use(close = SQLiteBackupHandle::close, block = block)
 
+@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteBackupHandle.close() {
     val error = sqlite3_backup_finish(this)
     if (error != SQLITE_OK) throw SQLiteException("Cannot backup finish", error)

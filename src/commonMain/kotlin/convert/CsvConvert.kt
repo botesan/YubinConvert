@@ -6,6 +6,7 @@ import codepoint.isHankaku
 import codepoint.toCodePoints
 import csv.asCsvSequence
 import files.readFile
+import kotlinx.cinterop.ExperimentalForeignApi
 import ksqlite3.*
 import tool.currentTimeText
 import tool.dropTableIfExists
@@ -215,9 +216,9 @@ private fun List<List<String>>.checkHankaku() {
     println("\thankaku check finish.")
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteDB.writeToDb(csv: List<List<String>>) = runInTransaction {
     dropTableIfExists("ken_all")
-    // language=sql
     executeScript(
         """
         create table ken_all (
@@ -240,7 +241,6 @@ private fun SQLiteDB.writeToDb(csv: List<List<String>>) = runInTransaction {
         )
     """, isTrim = true
     )
-    // language=sql
     prepare(
         """
         insert into ken_all(

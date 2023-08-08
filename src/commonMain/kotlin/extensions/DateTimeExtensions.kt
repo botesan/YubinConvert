@@ -1,6 +1,6 @@
 package extensions
 
-import com.soywiz.klock.DateTime
+import korlibs.time.DateTime
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

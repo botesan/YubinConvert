@@ -1,6 +1,7 @@
 package command
 
 import ksqlite3.SQLITE3_VERSION
+import kotlin.experimental.ExperimentalNativeApi
 
 fun printKotlin() {
     print(
@@ -11,6 +12,7 @@ fun printKotlin() {
     )
 }
 
+@OptIn(ExperimentalNativeApi::class)
 fun printPlatform() {
     print(
         """

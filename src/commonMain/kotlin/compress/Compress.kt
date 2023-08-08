@@ -28,6 +28,7 @@ fun compress(filenames: CompressFilenames, numIterations: Int?, blockSplittingMa
 }
 
 private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: Int?): ByteArray {
+    @OptIn(ExperimentalForeignApi::class)
     return memScoped {
         val options = alloc<ZopfliOptions>()
         ZopfliInitOptions(options = options.ptr)

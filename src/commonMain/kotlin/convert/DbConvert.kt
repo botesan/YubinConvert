@@ -4,6 +4,7 @@ import codepoint.codePointToString
 import codepoint.isHankaku
 import codepoint.toCodePoints
 import files.fileModifiedTimeSec
+import kotlinx.cinterop.ExperimentalForeignApi
 import ksqlite3.*
 import tool.*
 
@@ -56,7 +57,6 @@ private fun SQLiteDB.createTableXKenAll() {
         dropIndexIfExists("zip_code_shrink_temp_id_len_kana")
         dropIndexIfExists("zip_code_shrink_temp_town_area_id")
         // 作成
-        // language=sql
         executeScript(
             """
             create table date_time (
@@ -153,19 +153,12 @@ private fun SQLiteDB.createTableXKenAll() {
             )
         """, isTrim = true
         )
-        // language=sql
         execute("create index zip_code_town_area      on zip_code_org(town_area)")
-        // language=sql
         execute("create index zip_code_kana_town_area on zip_code_org(kana_town_area)")
-        // language=sql
         execute("create index town_area_shrink_temp_kana on town_area_shrink_temp(kana)")
-        // language=sql
         execute("create index town_area_shrink_temp_name on town_area_shrink_temp(name)")
-        // language=sql
         execute("create index zip_code_shrink_temp_id_len_all   on zip_code_shrink_temp(id,len_all)")
-        // language=sql
         execute("create index zip_code_shrink_temp_id_len_kana  on zip_code_shrink_temp(id,len_kana)")
-        // language=sql
         execute("create index zip_code_shrink_temp_town_area_id on zip_code_shrink_temp(town_area_id)")
     }
     // 作業用設定
@@ -177,10 +170,8 @@ private fun SQLiteDB.createTableXKenAll() {
 
 private fun SQLiteDB.copyFromKenAll(f: DBFilenames) {
     val inSchema = "inSchema"
-    // language=sql
     execute("attach database '${f.dbKenAll}' as $inSchema")
     runInTransaction {
-        // language=sql
         executeScript(
             """
             insert into prefecture
@@ -215,7 +206,6 @@ private fun SQLiteDB.copyFromKenAll(f: DBFilenames) {
 }
 
 private fun SQLiteDB.replaceWords() = runInTransaction {
-    // language=sql
     executeScript(
         """
         update  zip_code_org
@@ -252,14 +242,12 @@ private fun SQLiteDB.replaceWords() = runInTransaction {
 }
 
 private fun SQLiteDB.makeTownAreaShrinkBase() = runInTransaction {
-    // language=sql
     execute(
         """
         insert into town_area_shrink_temp(id,kana,name)
             values(200000, '（ほかにけいさいがないばあい）', '（他に掲載がない場合）')
         """
     )
-    // language=sql
     execute(
         """
         insert into town_area_shrink_temp(kana,name)
@@ -321,13 +309,11 @@ private fun SQLiteDB.makeTownAreaShrinkBase() = runInTransaction {
             )
         """
     )
-    // language=sql
     execute("insert into town_area_shrink select id,kana,name from town_area_shrink_temp")
     println("\tinserted count=${lastChangesCount()}")
 }
 
 private fun SQLiteDB.makeZipCodeShrinkBase() = runInTransaction {
-    // language=sql
     execute(
         """
         insert into zip_code_shrink_temp
@@ -360,7 +346,6 @@ private fun SQLiteDB.makeZipCodeShrinkBase() = runInTransaction {
 }
 
 private fun SQLiteDB.deleteZipCodeShrinkExtra1() = runInTransaction {
-    // language=sql
     execute(
         """
         delete from zip_code_shrink_temp
@@ -390,7 +375,6 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra1() = runInTransaction {
 }
 
 private fun SQLiteDB.deleteZipCodeShrinkExtra2() = runInTransaction {
-    // language=sql
     execute(
         """
         delete from zip_code_shrink_temp
@@ -419,9 +403,9 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra2() = runInTransaction {
     println("\tdeleted count=${lastChangesCount()}")
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteDB.renumberTownAreaShrink() {
     val oldIds = mutableListOf<Long>()
-    // language=sql
     prepare(
         """
         select
@@ -440,7 +424,6 @@ private fun SQLiteDB.renumberTownAreaShrink() {
             true
         }
     }
-    // language=sql
     prepare("update town_area_shrink set id=? where id=?").use { update1 ->
         prepare("update zip_code_shrink_temp set town_area_id=? where town_area_id=?").use { update2 ->
             runInTransaction {
@@ -467,7 +450,6 @@ private fun SQLiteDB.renumberTownAreaShrink() {
 
 private fun SQLiteDB.zipCodeShrinkJoinTownArea() = runInTransaction {
     // まとめる個数が一つのものはまとめない
-    // language=sql
     execute(
         """
         insert into zip_code_shrink_temp
@@ -496,7 +478,6 @@ private fun SQLiteDB.zipCodeShrinkJoinTownArea() = runInTransaction {
 
 private fun SQLiteDB.deleteZipCodeShrinkExtra3() = runInTransaction {
     // まとめる個数が一つのものはまとめない
-    // language=sql
     execute(
         """
         delete from zip_code_shrink_temp
@@ -519,7 +500,6 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra3() = runInTransaction {
 }
 
 private fun SQLiteDB.makeOldZipCodeShrink() = runInTransaction {
-    // language=sql
     executeScript(
         """
         insert into old_zip_code_shrink_temp(old_zip_code)
@@ -536,7 +516,6 @@ private fun SQLiteDB.makeOldZipCodeShrink() = runInTransaction {
 }
 
 private fun SQLiteDB.makeZipCodeShrink() = runInTransaction {
-    // language=sql
     execute(
         """
         insert into zip_code_shrink
@@ -559,7 +538,6 @@ private fun SQLiteDB.makeZipCodeShrink() = runInTransaction {
 }
 
 private fun SQLiteDB.deleteTownAreaShrinkExtra() = runInTransaction {
-    // language=sql
     execute(
         """
         delete from town_area_shrink
@@ -581,7 +559,6 @@ private fun SQLiteDB.deleteTownAreaShrinkExtra() = runInTransaction {
 private fun SQLiteDB.checkHankaku() {
     println("\thankaku check start.")
     execute(
-        // language=sql
         "select kana_town_area||town_area from zip_code_shrink"
     ).second
         .asSequence()
@@ -593,7 +570,6 @@ private fun SQLiteDB.checkHankaku() {
         .forEach { println("\tzip code shrink hankaku=${it.codePointToString()}") }
     println("\tzip code shrink hankaku check finish.")
     execute(
-        // language=sql
         "select kana||name from town_area_shrink"
     ).second
         .asSequence()
@@ -607,7 +583,6 @@ private fun SQLiteDB.checkHankaku() {
 }
 
 private fun SQLiteDB.checkZipCode() {
-    // language=sql
     val rows = execute(
         """
         select count(id),id,x0401_02_code,old_zip_code,zip_code,kana_town_area,town_area
@@ -642,11 +617,11 @@ private fun SQLiteDB.dropTempTable() = runInTransaction {
     dropIndexIfExists("zip_code_shrink_temp_town_area_id")
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteDB.setDateTime(files: DBFilenames) {
     runInTransaction {
         val createdTimeMillis = 1000 * fileModifiedTimeSec(files.zipKenAll)
         val processedTimeMillis = 1000 * currentTimeSec()
-        // language=sql
         prepare("insert or replace into date_time values(?,?,?)").use {
             it.bind(1, 1)
             it.bind(2, createdTimeMillis)
@@ -657,7 +632,6 @@ private fun SQLiteDB.setDateTime(files: DBFilenames) {
 }
 
 private fun SQLiteDB.printLastInformation() {
-    // language=sql
     val shrinkCount = execute(
         """
         select sum(sum_len)

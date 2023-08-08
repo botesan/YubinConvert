@@ -1,7 +1,7 @@
 package download
 
-import com.soywiz.kmem.ByteArrayBuilder
-import com.soywiz.korio.net.URL
+import korlibs.io.net.URL
+import korlibs.memory.ByteArrayBuilder
 import kotlinx.cinterop.*
 import platform.windows.*
 import util.Closeable
@@ -11,6 +11,7 @@ import util.use
  * 簡易HTTPクライアント
  * Windowsの場合、Korioのhttps通信でデータが途中で切れるため、独自に処理を記述する
  */
+@OptIn(ExperimentalForeignApi::class)
 actual class SimpleHttpClient {
     private fun request(method: String, url: URL): Response {
         val requestFlags: UInt = when (url.scheme) {
@@ -46,6 +47,7 @@ actual class SimpleHttpClient {
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 class HInternet private constructor(handle: HINTERNET) : Closeable {
     private var handle: HINTERNET? = handle
 
@@ -63,16 +65,17 @@ class HInternet private constructor(handle: HINTERNET) : Closeable {
         fun open(userAgent: String): HInternet {
             val handle = InternetOpenA(
                 lpszAgent = userAgent,
-                dwAccessType = INTERNET_OPEN_TYPE_PRECONFIG,
+                dwAccessType = INTERNET_OPEN_TYPE_PRECONFIG.convert(),
                 lpszProxy = null,
                 lpszProxyBypass = null,
-                dwFlags = 0
+                dwFlags = 0.convert()
             ) ?: error("InternetOpenA() is error. ${GetLastError()}")
             return HInternet(handle)
         }
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 class HInternetConnect private constructor(handle: HINTERNET) : Closeable {
     private var handle: HINTERNET? = handle
 
@@ -94,15 +97,16 @@ class HInternetConnect private constructor(handle: HINTERNET) : Closeable {
                 nServerPort = url.port.convert(),
                 lpszUserName = null,
                 lpszPassword = null,
-                dwService = INTERNET_SERVICE_HTTP,
-                dwFlags = 0,
-                dwContext = 0
+                dwService = INTERNET_SERVICE_HTTP.convert(),
+                dwFlags = 0.convert(),
+                dwContext = 0.convert()
             ) ?: error("InternetConnectA() is error. ${GetLastError()}")
             return HInternetConnect(handle)
         }
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
     private var handle: HINTERNET? = handle
 
@@ -118,7 +122,7 @@ class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
                 lpszHeaders = "",
                 dwHeadersLength = "".length.convert(),
                 lpOptional = null,
-                dwOptionalLength = 0
+                dwOptionalLength = 0.convert()
             ) == FALSE
         ) error("HttpSendRequestA() is error. ${GetLastError()}")
         val statusCode = getStatusCode(handle)
@@ -149,7 +153,7 @@ class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
             val dwSize = alloc<DWORDVar>()
             if (HttpQueryInfoA(
                     hRequest = handle,
-                    dwInfoLevel = HTTP_QUERY_RAW_HEADERS_CRLF,
+                    dwInfoLevel = HTTP_QUERY_RAW_HEADERS_CRLF.convert(),
                     lpBuffer = null,
                     lpdwBufferLength = dwSize.ptr,
                     lpdwIndex = null
@@ -166,7 +170,7 @@ class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
                 buffer.usePinned { lpBuffer ->
                     if (HttpQueryInfoA(
                             hRequest = handle,
-                            dwInfoLevel = HTTP_QUERY_RAW_HEADERS_CRLF,
+                            dwInfoLevel = HTTP_QUERY_RAW_HEADERS_CRLF.convert(),
                             lpBuffer = lpBuffer.addressOf(index = 0),
                             lpdwBufferLength = dwSize.ptr,
                             lpdwIndex = null
@@ -220,7 +224,7 @@ class HInternetRequest private constructor(handle: HINTERNET) : Closeable {
                 lpszReferrer = null,
                 lplpszAcceptTypes = null,
                 dwFlags = requestFlags,
-                dwContext = 0
+                dwContext = 0.convert()
             ) ?: error("HttpOpenRequestA() is error. ${GetLastError()}")
             return HInternetRequest(handle)
         }

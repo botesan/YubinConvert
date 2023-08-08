@@ -1,10 +1,10 @@
 package download
 
-import com.soywiz.klock.DateFormat
-import com.soywiz.klock.parse
 import command.DefaultFilenames
 import extensions.unixTimeSec
 import files.*
+import korlibs.time.DateFormat
+import korlibs.time.parse
 import tool.currentTimeText
 
 interface DownloadFilenames {

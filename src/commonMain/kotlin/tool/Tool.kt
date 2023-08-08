@@ -7,8 +7,10 @@ import platform.posix.strftime
 import platform.posix.time
 import platform.posix.time_tVar
 
+@OptIn(ExperimentalForeignApi::class)
 fun currentTimeSec(): Long = time(null)
 
+@OptIn(ExperimentalForeignApi::class)
 fun currentTimeText(): String = memScoped {
     val t = alloc<time_tVar>()
     time(t.ptr)
@@ -31,7 +33,6 @@ fun String.trimSql() = trim()
 // FIXME: 各SQLインジェクション対応が必要
 //  使用範囲が限られているため現状実施せず
 
-// language=sql
 fun SQLiteDB.dropIfExists(kind: String, name: String) = execute("drop $kind if exists $name")
 fun SQLiteDB.dropTableIfExists(name: String) = dropIfExists("table", name)
 fun SQLiteDB.dropViewIfExists(name: String) = dropIfExists("view", name)
