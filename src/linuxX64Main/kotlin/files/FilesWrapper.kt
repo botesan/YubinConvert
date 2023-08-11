@@ -5,32 +5,24 @@ import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.posix.*
 
-@Suppress("SpellCheckingInspection")
+@Suppress("SpellCheckingInspection", "FunctionName")
 @OptIn(ExperimentalForeignApi::class)
-actual fun fopenWrapper(filePath: String, mode: String): CPointer<FILE>? = fopen(filePath, mode)
+actual fun _fopenWrapper(filePath: String, mode: String): CPointer<FILE>? = fopen(filePath, mode)
 
+@Suppress("FunctionName")
 @OptIn(ExperimentalForeignApi::class)
-actual fun statWrapper(filePath: String, stat: CValuesRef<stat>?): Int = stat(filePath, stat)
+actual fun _statWrapper(filePath: String, stat: CValuesRef<stat>?): Int = stat(filePath, stat)
 
 actual val stat.accessedTimeSec: Long get() = st_atim.tv_sec
 actual val stat.modifiedTimeSec: Long get() = st_mtim.tv_sec
 
+@Suppress("FunctionName", "SpellCheckingInspection")
+@OptIn(ExperimentalForeignApi::class)
+actual fun _utimeWrapper(filePath: String, utimbuf: CValuesRef<Utimbuf>): Int = utime(filePath, utimbuf)
+
 @Suppress("SpellCheckingInspection")
 actual typealias Utimbuf = utimbuf
 
-@Suppress("SpellCheckingInspection", "EXTENSION_SHADOWED_BY_MEMBER")
-actual var Utimbuf.actime: Long
-    get() = actime
-    set(value) {
-        actime = value
-    }
+actual var Utimbuf.accessedTime: Long by Utimbuf::actime
 
-@Suppress("SpellCheckingInspection", "EXTENSION_SHADOWED_BY_MEMBER")
-actual var Utimbuf.modtime: Long
-    get() = modtime
-    set(value) {
-        modtime = value
-    }
-
-@OptIn(ExperimentalForeignApi::class)
-actual fun utimeWrapper(filePath: String, utimbuf: CValuesRef<Utimbuf>): Int = utime(filePath, utimbuf)
+actual var Utimbuf.modifiedTime: Long by Utimbuf::modtime

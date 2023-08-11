@@ -1,8 +1,7 @@
 package info
 
 import command.Filenames
-import files.fileExists
-import files.fileModifiedTimeSec
+import files.fileStat
 import files.readFile
 import korlibs.crypto.md5
 import korlibs.time.DateFormat
@@ -22,10 +21,11 @@ fun info(filenames: Filenames) {
 
 private fun infoModifiedTime(filePath: String) {
     print("\t$filePath")
-    if (fileExists(filePath).not()) {
+    val stat = fileStat(filePath)
+    if (stat.isExists.not()) {
         println(" [not exist.]")
     } else {
-        val modifiedTimeMillis = fileModifiedTimeSec(filePath)
+        val modifiedTimeMillis = stat.modifiedTimeSec
             .toDuration(DurationUnit.SECONDS)
             .toLong(DurationUnit.MILLISECONDS)
         val modifiedTime = DateTime.fromUnixMillis(modifiedTimeMillis).local
@@ -36,7 +36,8 @@ private fun infoModifiedTime(filePath: String) {
 
 private fun infoHashAndSize(filePath: String) {
     print("\t$filePath")
-    if (fileExists(filePath).not()) {
+    val stat = fileStat(filePath)
+    if (stat.isExists.not()) {
         println(" [not exist.]")
     } else {
         val bytes = readFile(filePath)

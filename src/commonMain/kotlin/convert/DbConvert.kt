@@ -3,10 +3,10 @@ package convert
 import codepoint.codePointToString
 import codepoint.isHankaku
 import codepoint.toCodePoints
-import files.fileModifiedTimeSec
-import kotlinx.cinterop.ExperimentalForeignApi
+import files.fileStat
 import ksqlite3.*
 import tool.*
+import util.use
 
 interface DBFilenames {
     val zipKenAll: String
@@ -403,7 +403,6 @@ private fun SQLiteDB.deleteZipCodeShrinkExtra2() = runInTransaction {
     println("\tdeleted count=${lastChangesCount()}")
 }
 
-@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteDB.renumberTownAreaShrink() {
     val oldIds = mutableListOf<Long>()
     prepare(
@@ -441,7 +440,6 @@ private fun SQLiteDB.renumberTownAreaShrink() {
                     }.execute()
                     newId++
                 }
-                // language=
                 println("\tlast newId=$newId")
             }
         }
@@ -617,11 +615,10 @@ private fun SQLiteDB.dropTempTable() = runInTransaction {
     dropIndexIfExists("zip_code_shrink_temp_town_area_id")
 }
 
-@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteDB.setDateTime(files: DBFilenames) {
     runInTransaction {
-        val createdTimeMillis = 1000 * fileModifiedTimeSec(files.zipKenAll)
-        val processedTimeMillis = 1000 * currentTimeSec()
+        val createdTimeMillis = 1_000 * fileStat(files.zipKenAll).modifiedTimeSec
+        val processedTimeMillis = 1_000 * currentTimeSec()
         prepare("insert or replace into date_time values(?,?,?)").use {
             it.bind(1, 1)
             it.bind(2, createdTimeMillis)

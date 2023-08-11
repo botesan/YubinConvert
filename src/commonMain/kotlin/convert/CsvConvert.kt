@@ -6,12 +6,12 @@ import codepoint.isHankaku
 import codepoint.toCodePoints
 import csv.asCsvSequence
 import files.readFile
-import kotlinx.cinterop.ExperimentalForeignApi
 import ksqlite3.*
 import tool.currentTimeText
 import tool.dropTableIfExists
 import tool.executeScript
 import tool.setPageSizeAndVacuum
+import util.use
 
 interface CSVFilenames {
     val csvKenAll: String
@@ -216,7 +216,6 @@ private fun List<List<String>>.checkHankaku() {
     println("\thankaku check finish.")
 }
 
-@OptIn(ExperimentalForeignApi::class)
 private fun SQLiteDB.writeToDb(csv: List<List<String>>) = runInTransaction {
     dropTableIfExists("ken_all")
     executeScript(
