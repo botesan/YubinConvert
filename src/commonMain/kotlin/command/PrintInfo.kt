@@ -40,11 +40,12 @@ fun printFilenames(filenames: Filenames) {
     print(
         """
         |File
-        |  ZIP : ${filenames.zipKenAll}
-        |  CSV : ${filenames.csvKenAll}
-        |  DB1 : ${filenames.dbKenAll}
-        |  DB2 : ${filenames.dbXKenAll}
-        |  GZ  : ${filenames.gzDbXKenAll}
+        |  [in]  ZIP : ${filenames.zipKenAll}
+        |  [in]  CSV : ${filenames.csvKenAll}
+        |  [out] CSV : ${filenames.csvXKenAll}
+        |  [out] DB1 : ${filenames.dbKenAll}
+        |  [out] DB2 : ${filenames.dbXKenAll}
+        |  [out] GZ  : ${filenames.gzDbXKenAll}
         |""".trimMargin()
     )
 }
