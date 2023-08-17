@@ -6,14 +6,20 @@ import codepoint.isHankaku
 import codepoint.toCodePoints
 import csv.asCsvSequence
 import files.readFile
-import ksqlite3.*
+import files.writeFile
+import korlibs.io.lang.toByteArray
+import ksqlite3.SQLiteDB
+import ksqlite3.SQLiteOpenType
+import ksqlite3.runInTransaction
 import tool.currentTimeText
 import tool.dropTableIfExists
 import tool.executeScript
 import tool.setPageSizeAndVacuum
+import util.use
 
 interface CSVFilenames {
     val csvKenAll: String
+    val csvXKenAll: String
     val dbKenAll: String
 }
 
@@ -215,9 +221,20 @@ private fun List<List<String>>.checkHankaku() {
     println("\thankaku check finish.")
 }
 
+private fun List<List<String>>.writeToCsv(csvFilePath: String) {
+    val data = joinToString(separator = "\r\n", postfix = "\r\n") { line ->
+        line.withIndex().joinToString(separator = ",") { col ->
+            when (col.index) {
+                0, in 9..14 -> col.value
+                else -> "\"${col.value}\""
+            }
+        }
+    }.toByteArray()
+    writeFile(filePath = csvFilePath, data = data)
+}
+
 private fun SQLiteDB.writeToDb(csv: List<List<String>>) = runInTransaction {
     dropTableIfExists("ken_all")
-    // language=sql
     executeScript(
         """
         create table ken_all (
@@ -240,7 +257,6 @@ private fun SQLiteDB.writeToDb(csv: List<List<String>>) = runInTransaction {
         )
     """, isTrim = true
     )
-    // language=sql
     prepare(
         """
         insert into ken_all(
@@ -274,24 +290,25 @@ private fun printProgress(no: Int, max: Int, message: String) {
     println("[${currentTimeText()}] CSV Convert $no/$max : $message")
 }
 
-// TODO: マージ後のCSV書き出し（必要なら）
 fun csvConvert(f: CSVFilenames) {
     val merged = run {
-        printProgress(1, 7, "create csv sequence")
+        printProgress(1, 8, "create csv sequence")
         val csv = readFile(f.csvKenAll).asSjisSequence().asCsvSequence()
-        printProgress(2, 7, "merge divided line")
+        printProgress(2, 8, "merge divided line")
         csv.mergeDividedLine()
     }
-    printProgress(3, 7, "check duplicate without kana")
+    printProgress(3, 8, "check duplicate without kana")
     merged.checkDuplicateWithoutKana()
-    printProgress(4, 7, "han to zen etc")
+    printProgress(4, 8, "han to zen etc")
     merged.han2ZenEtc()
-    printProgress(5, 7, "check hankaku")
+    printProgress(5, 8, "check hankaku")
     merged.checkHankaku()
+    printProgress(6, 8, "write to CSV")
+    merged.writeToCsv(csvFilePath = f.csvXKenAll)
     SQLiteDB(f.dbKenAll, SQLiteOpenType.ReadWriteCreate).use { db ->
-        printProgress(6, 7, "write to db")
+        printProgress(7, 8, "write to db")
         db.writeToDb(merged)
-        printProgress(7, 7, "set page size and vacuum")
+        printProgress(8, 8, "set page size and vacuum")
         db.setPageSizeAndVacuum()
     }
 }

@@ -1,10 +1,12 @@
 package download
 
-import com.soywiz.klock.DateFormat
-import com.soywiz.klock.parse
 import command.DefaultFilenames
 import extensions.unixTimeSec
-import files.*
+import files.fileStat
+import files.setFileModifiedTimeSec
+import files.writeFile
+import korlibs.time.DateFormat
+import korlibs.time.parse
 import tool.currentTimeText
 
 interface DownloadFilenames {
@@ -28,11 +30,10 @@ fun download(filenames: DownloadFilenames) {
     println("\tLastModified  : $lastModified / $lastModifiedSec")
     check(value = lastModifiedSec > 0) { "Illegal last modified. $lastModified / $lastModifiedSec" }
     // ZIPファイル有無チェック
-    if (fileExists(filenames.zipKenAll)) {
+    val stat = fileStat(filenames.zipKenAll)
+    if (stat.isExists) {
         // スキップチェック
-        if (fileSize(filenames.zipKenAll).toLong() == contentLength &&
-            fileModifiedTimeSec(filenames.zipKenAll) shr 1 == lastModifiedSec shr 1
-        ) {
+        if (stat.size.toLong() == contentLength && stat.modifiedTimeSec shr 1 == lastModifiedSec shr 1) {
             println("\tZIP file exists. Same time and size. Skip download.")
             return
         }

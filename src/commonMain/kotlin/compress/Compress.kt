@@ -28,6 +28,7 @@ fun compress(filenames: CompressFilenames, numIterations: Int?, blockSplittingMa
 }
 
 private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: Int?): ByteArray {
+    @OptIn(ExperimentalForeignApi::class)
     return memScoped {
         val options = alloc<ZopfliOptions>()
         ZopfliInitOptions(options = options.ptr)
@@ -45,7 +46,7 @@ private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: I
         input.asUByteArray().usePinned { inputPinned ->
             ZopfliCompress(
                 options = options.ptr,
-                outputType = ZOPFLI_FORMAT_GZIP,
+                outputType = ZopfliFormat.ZOPFLI_FORMAT_GZIP,
                 input = inputPinned.addressOf(index = 0),
                 inputSize = input.size.convert(),
                 output = output.ptr,
@@ -53,10 +54,12 @@ private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: I
             )
         }
         val outputPointer = checkNotNull(output.value) { "Illegal compressed output." }
-        val size = outputSize.value
-        check(value = size <= Int.MAX_VALUE.convert()) { "Illegal compressed size. $size" }
-        val outputBytes = outputPointer.readBytes(size.toInt())
-        free(outputPointer)
-        outputBytes
+        try {
+            val size = outputSize.value
+            check(value = size <= Int.MAX_VALUE.convert()) { "Illegal compressed size. $size" }
+            outputPointer.readBytes(size.toInt())
+        } finally {
+            free(outputPointer)
+        }
     }
 }

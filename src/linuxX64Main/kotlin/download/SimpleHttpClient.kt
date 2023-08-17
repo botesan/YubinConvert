@@ -1,9 +1,9 @@
 package download
 
-import com.soywiz.korio.net.URL
-import com.soywiz.korio.net.http.Http
-import com.soywiz.korio.net.http.HttpClient
-import com.soywiz.korio.net.http.createHttpClient
+import korlibs.io.net.URL
+import korlibs.io.net.http.Http
+import korlibs.io.net.http.HttpClient
+import korlibs.io.net.http.createHttpClient
 import kotlinx.coroutines.runBlocking
 
 /**

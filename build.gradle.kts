@@ -1,4 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.github.benmanes.gradle.versions.updates.resolutionstrategy.ComponentSelectionWithCurrent
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
@@ -8,18 +9,18 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.github.ben-manes:gradle-versions-plugin:0.42.0")
+        classpath("com.github.ben-manes:gradle-versions-plugin:0.47.0")
     }
 }
 
 apply(plugin = "com.github.ben-manes.versions")
 
 plugins {
-    kotlin("multiplatform") version "1.7.20"
+    kotlin("multiplatform") version "1.9.0"
 }
 
 group = "jp.mito.yconvert"
-version = "1.1.0"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -27,7 +28,7 @@ repositories {
 
 kotlin {
     /** SQLite3のバージョン */
-    val sqlite3Version = "3390400"
+    val sqlite3Version = "3420000"
 
     /*
     val hostOs = System.getProperty("os.name")
@@ -85,9 +86,6 @@ kotlin {
             }
         }
         binaries {
-            all {
-                binaryOption("memoryModel", "experimental")
-            }
             executable {
                 entryPoint("main.main")
                 createGenerateProgramNameSourceTask(target, baseName)
@@ -104,9 +102,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-                implementation("com.soywiz.korlibs.korio:korio:3.2.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("com.soywiz.korlibs.korio:korio:4.0.9")
             }
         }
         val mingwX64Main by getting {
@@ -128,14 +125,14 @@ kotlin {
 tasks.named<DependencyUpdatesTask>(name = "dependencyUpdates") {
     resolutionStrategy {
         componentSelection {
-            all {
+            all(Action<ComponentSelectionWithCurrent> {
                 val rejected = arrayOf("alpha", "beta", "rc", "cr", "m", "preview", "b", "ea", "eap")
                     .map { "(?i).*[.-]$it[.\\d-+]*[.\\d\\w-+]*".toRegex() }
                     .any { candidate.version.matches(it) }
                 if (rejected) {
                     reject("Release candidate")
                 }
-            }
+            })
         }
     }
 }

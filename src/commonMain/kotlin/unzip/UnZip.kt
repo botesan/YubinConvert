@@ -1,11 +1,14 @@
 package unzip
 
-import com.soywiz.korio.file.baseName
-import com.soywiz.korio.file.std.openAsZip
-import com.soywiz.korio.stream.openAsync
 import command.DefaultFilenames
 import extensions.unixTimeSec
-import files.*
+import files.fileStat
+import files.readFile
+import files.setFileModifiedTimeSec
+import files.writeFile
+import korlibs.io.file.baseName
+import korlibs.io.file.std.openAsZip
+import korlibs.io.stream.openAsync
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import tool.currentTimeText
@@ -30,13 +33,12 @@ fun unZip(filenames: UnZipFilenames) {
         println("\t       (${DefaultFilenames.csvKenAll} / ${csvStatInZip.size} / $csvCreateTimeSecInZip)")
         // CSVファイル
         println("\tto   : ${filenames.csvKenAll}")
-        if (fileExists(filenames.csvKenAll)) {
+        val stat = fileStat(filenames.csvKenAll)
+        if (stat.isExists) {
             // スキップチェック
-            val csvModifiedTimeSec = fileModifiedTimeSec(filenames.csvKenAll)
-            val csvFileSize = fileSize(filenames.csvKenAll).toLong()
-            if (csvStatInZip.size == csvFileSize &&
-                csvCreateTimeSecInZip shr 1 == csvModifiedTimeSec shr 1
-            ) {
+            val csvModifiedTimeSec = stat.modifiedTimeSec
+            val csvFileSize = stat.size.toLong()
+            if (csvStatInZip.size == csvFileSize && csvCreateTimeSecInZip shr 1 == csvModifiedTimeSec shr 1) {
                 println("\tCSV file exists. Same time and size. Skip unzip.")
                 return@runBlocking
             }
