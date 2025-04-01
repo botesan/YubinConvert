@@ -11,6 +11,7 @@ import util.use
  * 簡易HTTPクライアント
  * Windowsの場合、Korioのhttps通信でデータが途中で切れるため、独自に処理を記述する
  */
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 actual class SimpleHttpClient {
     private fun request(method: String, url: URL): Response {

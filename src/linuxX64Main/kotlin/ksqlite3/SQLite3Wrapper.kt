@@ -1,29 +1,61 @@
-@file:Suppress("FunctionName", "SpellCheckingInspection")
+@file:Suppress("FunctionName")
 
 package ksqlite3
 
 import kotlinx.cinterop.*
 
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE3_VERSION: String = sqlite3.SQLITE_VERSION
 
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_OK: Int = sqlite3.SQLITE_OK
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_BUSY: Int = sqlite3.SQLITE_BUSY
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_DONE: Int = sqlite3.SQLITE_DONE
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_ROW: Int = sqlite3.SQLITE_ROW
 
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_OPEN_READONLY: Int = sqlite3.SQLITE_OPEN_READONLY
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_OPEN_READWRITE: Int = sqlite3.SQLITE_OPEN_READWRITE
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_OPEN_CREATE: Int = sqlite3.SQLITE_OPEN_CREATE
 
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_NULL: Int = sqlite3.SQLITE_NULL
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_INTEGER: Int = sqlite3.SQLITE_INTEGER
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_FLOAT: Int = sqlite3.SQLITE_FLOAT
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_TEXT: Int = sqlite3.SQLITE_TEXT
+
+@OptIn(ExperimentalForeignApi::class)
 actual val SQLITE_BLOB: Int = sqlite3.SQLITE_BLOB
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@OptIn(ExperimentalForeignApi::class)
 actual typealias SQLite3 = sqlite3.sqlite3
+
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@OptIn(ExperimentalForeignApi::class)
 actual typealias SQLite3Backup = sqlite3.sqlite3_backup
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@ExperimentalForeignApi
+actual typealias SQLite3Stmt = cnames.structs.sqlite3_stmt
+
+@OptIn(ExperimentalForeignApi::class)
 actual fun sqlite3_sleep(millis: Int): Int = sqlite3.sqlite3_sleep(millis)
 
 @OptIn(ExperimentalForeignApi::class)
@@ -60,10 +92,9 @@ actual fun sqlite3_finalize(pStmt: CValuesRef<SQLite3Stmt>?): Int = sqlite3.sqli
 @OptIn(ExperimentalForeignApi::class)
 actual fun sqlite3_column_count(pStmt: CValuesRef<SQLite3Stmt>?): Int = sqlite3.sqlite3_column_count(pStmt)
 
-@Suppress("LocalVariableName")
 @OptIn(ExperimentalForeignApi::class)
-actual fun sqlite3_column_name(pStmt: CValuesRef<SQLite3Stmt>?, N: Int): CPointer<ByteVar>? =
-    sqlite3.sqlite3_column_name(pStmt, N)
+actual fun sqlite3_column_name(pStmt: CValuesRef<SQLite3Stmt>?, n: Int): CPointer<ByteVar>? =
+    sqlite3.sqlite3_column_name(pStmt, n)
 
 @OptIn(ExperimentalForeignApi::class)
 actual fun sqlite3_column_type(pStmt: CValuesRef<SQLite3Stmt>?, iCol: Int): Int =

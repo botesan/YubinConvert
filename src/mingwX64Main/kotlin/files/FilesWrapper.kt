@@ -6,7 +6,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.wcstr
 import platform.posix.*
 
-@Suppress("SpellCheckingInspection", "FunctionName")
+@Suppress("FunctionName")
 @OptIn(ExperimentalForeignApi::class)
 actual fun _fopenWrapper(filePath: String, mode: String): CPointer<FILE>? = _wfopen(filePath.wcstr, mode.wcstr)
 
@@ -17,11 +17,11 @@ actual fun _statWrapper(filePath: String, stat: CValuesRef<stat>?): Int = wstat(
 actual val stat.accessedTimeSec: Long get() = st_atime
 actual val stat.modifiedTimeSec: Long get() = st_mtime
 
-@Suppress("FunctionName", "SpellCheckingInspection")
+@Suppress("FunctionName")
 @OptIn(ExperimentalForeignApi::class)
 actual fun _utimeWrapper(filePath: String, utimbuf: CValuesRef<Utimbuf>): Int = _wutime(filePath.wcstr, utimbuf)
 
-@Suppress("SpellCheckingInspection")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual typealias Utimbuf = _utimbuf
 
 actual var Utimbuf.accessedTime: Long by Utimbuf::actime

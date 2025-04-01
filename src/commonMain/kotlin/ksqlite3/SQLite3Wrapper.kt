@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName", "SpellCheckingInspection")
+@file:Suppress("FunctionName")
 
 package ksqlite3
 
@@ -21,11 +21,17 @@ expect val SQLITE_FLOAT: Int
 expect val SQLITE_TEXT: Int
 expect val SQLITE_BLOB: Int
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 expect class SQLite3 : CStructVar
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 expect class SQLite3Backup : CStructVar
+
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@OptIn(ExperimentalForeignApi::class)
+expect class SQLite3Stmt : CPointed
 
 expect fun sqlite3_sleep(millis: Int): Int
 
@@ -63,7 +69,7 @@ expect fun sqlite3_finalize(pStmt: CValuesRef<SQLite3Stmt>?): Int
 expect fun sqlite3_column_count(pStmt: CValuesRef<SQLite3Stmt>?): Int
 
 @OptIn(ExperimentalForeignApi::class)
-expect fun sqlite3_column_name(pStmt: CValuesRef<SQLite3Stmt>?, N: Int): CPointer<ByteVar>?
+expect fun sqlite3_column_name(pStmt: CValuesRef<SQLite3Stmt>?, n: Int): CPointer<ByteVar>?
 
 @OptIn(ExperimentalForeignApi::class)
 expect fun sqlite3_column_type(pStmt: CValuesRef<SQLite3Stmt>?, iCol: Int): Int

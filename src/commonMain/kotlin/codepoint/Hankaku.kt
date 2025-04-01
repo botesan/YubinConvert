@@ -12,7 +12,7 @@ fun isHankaku(codePoint: Int): Boolean = _isHankaku_1(codePoint)
 // Kotlin 1.6.21 以下だと通らない
 // そのため_isHankaku_2側を使用していた
 @Suppress("unused", "FunctionName")
-private inline fun _isHankaku_1(codePoint: Int): Boolean {
+private fun _isHankaku_1(codePoint: Int): Boolean {
     when (codePoint) {
         0x00a2,
         0x00a3,
@@ -885,13 +885,14 @@ private inline fun _isHankaku_1(codePoint: Int): Boolean {
         in 0x1f860..0x1f887,
         in 0x1f890..0x1f8ad,
         in 0xe0020..0xe007f -> return true
+
         else -> return false
     }
 }
 
 // ビルドが通らない時用
 @Suppress("unused", "FunctionName")
-private inline fun _isHankaku_2(codePoint: Int): Boolean {
+private fun _isHankaku_2(codePoint: Int): Boolean {
     when (codePoint) {
         in 0x0000..0x00a0 -> return true
         0x00a2 -> return true

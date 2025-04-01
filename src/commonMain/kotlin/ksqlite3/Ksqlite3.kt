@@ -114,8 +114,6 @@ inline fun <R> SQLiteDB.runInTransaction(block: SQLiteDB.() -> R): R {
     }
 }
 
-typealias SQLite3Stmt = cnames.structs.sqlite3_stmt
-
 @OptIn(ExperimentalForeignApi::class)
 value class SQLiteStmtHandle(val pStmt: CPointer<SQLite3Stmt>) : Closeable {
     override fun close() {

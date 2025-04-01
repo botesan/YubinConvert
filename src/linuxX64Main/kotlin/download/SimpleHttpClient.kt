@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
  * 簡易HTTPクライアント
  * Windows以外の場合、Korioを使用する
  */
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class SimpleHttpClient {
     private val client: HttpClient = createHttpClient()
 
