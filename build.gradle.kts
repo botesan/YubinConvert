@@ -26,9 +26,6 @@ repositories {
 }
 
 kotlin {
-    /** SQLite3のバージョン */
-    val sqlite3Version = "3420000"
-
     /*
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
@@ -75,7 +72,7 @@ kotlin {
         configure: KotlinNativeTargetWithHostTests.() -> Unit = {}
     ): KotlinNativeTargetWithHostTests.() -> Unit = {
         compilations["main"].cinterops {
-            val sqlite3 by creating { includeDirs(project.file("sqlite-amalgamation-$sqlite3Version")) }
+            val sqlite3 by creating { includeDirs(project.file("sqlite-amalgamation/source")) }
             val zopfli by creating { includeDirs(project.file("zopfli/src/zopfli")) }
         }
         binaries {
