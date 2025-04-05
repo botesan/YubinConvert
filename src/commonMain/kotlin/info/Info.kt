@@ -4,8 +4,11 @@ import command.Filenames
 import files.fileStat
 import files.readFile
 import korlibs.crypto.md5
-import korlibs.time.DateFormat
-import korlibs.time.DateTime
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.offsetAt
 import tool.currentTimeText
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -28,8 +31,9 @@ private fun infoModifiedTime(filePath: String) {
         val modifiedTimeMillis = stat.modifiedTimeSec
             .toDuration(DurationUnit.SECONDS)
             .toLong(DurationUnit.MILLISECONDS)
-        val modifiedTime = DateTime.fromUnixMillis(modifiedTimeMillis).local
-        val modifiedTimeText = DateFormat.FORMAT1.format(modifiedTime)
+        val modifiedTimeInstant = Instant.fromEpochMilliseconds(modifiedTimeMillis)
+        val offset = TimeZone.currentSystemDefault().offsetAt(modifiedTimeInstant)
+        val modifiedTimeText = modifiedTimeInstant.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET, offset)
         println(" $modifiedTimeText $modifiedTimeMillis")
     }
 }

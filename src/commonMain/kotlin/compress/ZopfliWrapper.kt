@@ -1,9 +1,8 @@
-@file:Suppress("SpellCheckingInspection")
-
 package compress
 
 import kotlinx.cinterop.*
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 expect class ZopfliOptions : CStructVar
 
@@ -14,8 +13,14 @@ expect var ZopfliOptions.numIterations: Int
 @OptIn(ExperimentalForeignApi::class)
 expect fun ZopfliInitOptions(options: CValuesRef<ZopfliOptions>?)
 
-expect enum class ZopfliFormat {
+enum class ZopfliFormat {
     ZOPFLI_FORMAT_GZIP,
+
+    @Suppress("unused")
+    ZOPFLI_FORMAT_ZLIB,
+
+    @Suppress("unused")
+    ZOPFLI_FORMAT_DEFLATE,
 }
 
 @Suppress("FunctionName")

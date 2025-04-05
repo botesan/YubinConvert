@@ -1,3 +1,6 @@
 [submodule "zopfli"]
 	path = zopfli
 	url = https://github.com/google/zopfli.git
+[submodule "sqlite-amalgamation"]
+	path = sqlite-amalgamation
+	url = https://github.com/algoritnl/sqlite-amalgamation.git

@@ -21,7 +21,7 @@ private fun CPointer<ByteVar>.nullTerminateToByteArray(): ByteArray =
 private fun CPointer<CPointerVar<ByteVar>>?.nullTerminateToByteArrays(count: Int): List<ByteArray> =
     (0..count).mapNotNull { index -> this?.get(index)?.nullTerminateToByteArray() }
 
-// TODO: mingwだと日本語パス名が使用できない（勝手にSJISで渡ってきてKotlin側でおかしくなる？）
+// TODO: mingwだと日本語パス名が使用できない（SJISで渡ってきてKotlin側でおかしくなる？）
 private fun List<ByteArray>.toStrings(): List<String> =
     map { it.asSjisSequence().toList().toCharArray().concatToString() }
 

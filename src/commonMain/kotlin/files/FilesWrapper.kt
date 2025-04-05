@@ -25,7 +25,7 @@ internal expect val stat.modifiedTimeSec: Long
 @OptIn(ExperimentalForeignApi::class)
 internal expect fun _utimeWrapper(filePath: String, utimbuf: CValuesRef<Utimbuf>): Int
 
-@Suppress("SpellCheckingInspection")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 expect class Utimbuf : CStructVar
 

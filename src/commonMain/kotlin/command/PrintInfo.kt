@@ -21,7 +21,6 @@ fun printPlatform() {
         |  cpuArchitecture    : ${Platform.cpuArchitecture}
         |  isDebugBinary      : ${Platform.isDebugBinary}
         |  isLittleEndian     : ${Platform.isLittleEndian}
-        |  memoryModel        : ${Platform.memoryModel}
         |  osFamily           : ${Platform.osFamily}
         |""".trimMargin()
     )

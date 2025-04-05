@@ -1,7 +1,6 @@
 package unzip
 
 import command.DefaultFilenames
-import extensions.unixTimeSec
 import files.fileStat
 import files.readFile
 import files.setFileModifiedTimeSec
@@ -12,6 +11,8 @@ import korlibs.io.stream.openAsync
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import tool.currentTimeText
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 interface UnZipFilenames {
     val zipKenAll: String
@@ -29,7 +30,8 @@ fun unZip(filenames: UnZipFilenames) {
             .firstOrNull { file -> file.baseName == DefaultFilenames.csvKenAll }
             ?: error("File not found ${DefaultFilenames.csvKenAll} in ${filenames.zipKenAll}")
         val csvStatInZip = csvFileInZip.stat()
-        val csvCreateTimeSecInZip = csvStatInZip.createTime.unixTimeSec
+        val csvCreateTimeSecInZip = csvStatInZip.createTime.unixMillisDouble
+            .toDuration(DurationUnit.MILLISECONDS).toLong(DurationUnit.SECONDS)
         println("\t       (${DefaultFilenames.csvKenAll} / ${csvStatInZip.size} / $csvCreateTimeSecInZip)")
         // CSVファイル
         println("\tto   : ${filenames.csvKenAll}")

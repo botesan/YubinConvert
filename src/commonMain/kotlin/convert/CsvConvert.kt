@@ -7,7 +7,9 @@ import codepoint.toCodePoints
 import csv.asCsvSequence
 import files.readFile
 import files.writeFile
-import korlibs.io.lang.toByteArray
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.getBytes
+import kotlinx.cinterop.utf8
 import ksqlite3.SQLiteDB
 import ksqlite3.SQLiteOpenType
 import ksqlite3.runInTransaction
@@ -221,6 +223,7 @@ private fun List<List<String>>.checkHankaku() {
     println("\thankaku check finish.")
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun List<List<String>>.writeToCsv(csvFilePath: String) {
     val data = joinToString(separator = "\r\n", postfix = "\r\n") { line ->
         line.withIndex().joinToString(separator = ",") { col ->
@@ -229,8 +232,8 @@ private fun List<List<String>>.writeToCsv(csvFilePath: String) {
                 else -> "\"${col.value}\""
             }
         }
-    }.toByteArray()
-    writeFile(filePath = csvFilePath, data = data)
+    }.utf8.getBytes()
+    writeFile(filePath = csvFilePath, data = data.sliceArray(indices = 0..<data.lastIndex))
 }
 
 private fun SQLiteDB.writeToDb(csv: List<List<String>>) = runInTransaction {
