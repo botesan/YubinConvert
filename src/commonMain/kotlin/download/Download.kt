@@ -1,13 +1,12 @@
 package download
 
 import command.DefaultFilenames
-import extensions.unixTimeSec
 import files.fileStat
 import files.setFileModifiedTimeSec
 import files.writeFile
 import io.ktor.http.*
-import korlibs.time.DateFormat
-import korlibs.time.parseUtc
+import kotlinx.datetime.Instant
+import kotlinx.datetime.format.DateTimeComponents
 import tool.currentTimeText
 
 interface DownloadFilenames {
@@ -27,7 +26,7 @@ fun download(filenames: DownloadFilenames) {
     println("\tContentLength : $contentLength")
     check(value = contentLength > 0) { "Illegal content length. $contentLength" }
     val lastModified = headers[HttpHeaders.LastModified] ?: error("Did not get last modified.")
-    val lastModifiedSec = DateFormat.DEFAULT_FORMAT.parseUtc(lastModified).unixTimeSec
+    val lastModifiedSec = Instant.parse(lastModified, DateTimeComponents.Formats.RFC_1123).epochSeconds
     println("\tLastModified  : $lastModified / $lastModifiedSec")
     check(value = lastModifiedSec > 0) { "Illegal last modified. $lastModified / $lastModifiedSec" }
     // ZIPファイル有無チェック

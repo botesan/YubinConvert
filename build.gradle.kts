@@ -93,6 +93,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
                 implementation("com.soywiz.korlibs.korio:korio:4.0.10")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
             }

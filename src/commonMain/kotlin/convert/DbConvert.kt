@@ -4,7 +4,11 @@ import codepoint.codePointToString
 import codepoint.isHankaku
 import codepoint.toCodePoints
 import files.fileStat
-import ksqlite3.*
+import kotlinx.datetime.Clock
+import ksqlite3.SQLiteDB
+import ksqlite3.SQLiteOpenType
+import ksqlite3.rowEach
+import ksqlite3.runInTransaction
 import tool.*
 import util.use
 
@@ -618,7 +622,7 @@ private fun SQLiteDB.dropTempTable() = runInTransaction {
 private fun SQLiteDB.setDateTime(files: DBFilenames) {
     runInTransaction {
         val createdTimeMillis = 1_000 * fileStat(files.zipKenAll).modifiedTimeSec
-        val processedTimeMillis = 1_000 * currentTimeSec()
+        val processedTimeMillis = Clock.System.now().toEpochMilliseconds()
         prepare("insert or replace into date_time values(?,?,?)").use {
             it.bind(1, 1)
             it.bind(2, createdTimeMillis)

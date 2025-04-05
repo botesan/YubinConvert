@@ -1,25 +1,23 @@
 package tool
 
-import kotlinx.cinterop.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.char
+import kotlinx.datetime.offsetAt
 import ksqlite3.SQLiteDB
-import platform.posix.localtime
-import platform.posix.strftime
-import platform.posix.time
-import platform.posix.time_tVar
 
-@OptIn(ExperimentalForeignApi::class)
-fun currentTimeSec(): Long = time(null)
-
-@OptIn(ExperimentalForeignApi::class)
-fun currentTimeText(): String = memScoped {
-    val t = alloc<time_tVar>()
-    time(t.ptr)
-    val tm = localtime(t.ptr)
-    val bufSize = 9
-    val bufPtr = allocArray<ByteVar>(bufSize)
-    val result = strftime(bufPtr, bufSize.convert(), "%H:%M:%S", tm)
-    if (result > 0.convert()) bufPtr.toKString() else ""
+private val TIME_FORMAT = DateTimeComponents.Format {
+    hour()
+    char(':')
+    minute()
+    char(':')
+    second()
 }
+
+fun currentTimeText(): String = Clock.System.now()
+    .let { now -> now.format(TIME_FORMAT, TimeZone.currentSystemDefault().offsetAt(now)) }
 
 fun String.trimSql() = trim()
     .splitToSequence(' ', '\t', '\r', '\n').filterNot(String::isEmpty).joinTo(StringBuilder(length), " ")
