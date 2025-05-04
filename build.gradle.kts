@@ -1,4 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.github.benmanes.gradle.versions.updates.resolutionstrategy.ComponentSelectionRulesWithCurrent
+import com.github.benmanes.gradle.versions.updates.resolutionstrategy.ComponentSelectionWithCurrent
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 
@@ -19,7 +21,7 @@ plugins {
 }
 
 group = "jp.mito.yconvert"
-version = "1.3.0"
+version = "1.3.1"
 
 repositories {
     mavenCentral()
@@ -72,8 +74,8 @@ kotlin {
         configure: KotlinNativeTargetWithHostTests.() -> Unit = {}
     ): KotlinNativeTargetWithHostTests.() -> Unit = {
         compilations["main"].cinterops {
-            val sqlite3 by creating { includeDirs(project.file("sqlite-amalgamation/source")) }
-            val zopfli by creating { includeDirs(project.file("zopfli/src/zopfli")) }
+            create("sqlite3") { includeDirs(project.file("sqlite-amalgamation/source")) }
+            create("zopfli") { includeDirs(project.file("zopfli/src/zopfli")) }
         }
         binaries {
             executable {
@@ -90,21 +92,23 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "3.1.2"
-        val commonMain by getting {
+        getByName("commonMain") {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
-                implementation("com.soywiz.korlibs.korio:korio:4.0.10")
+                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
+                implementation(project.dependencies.platform("org.kotlincrypto.hash:bom:0.7.0"))
+                implementation("org.kotlincrypto.hash:md")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
             }
         }
-        val mingwX64Main by getting {
+        getByName("mingwX64Main") {
             kotlin.srcDirs(getGenerateProgramNameSourcePath(target = mingwX64).parentFile)
             dependencies {
                 implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
             }
         }
-        val linuxX64Main by getting {
+        getByName("linuxX64Main") {
             kotlin.srcDirs(getGenerateProgramNameSourcePath(target = linuxX64).parentFile)
             dependencies {
                 // ktor & curl が windows ホストでビルドエラー（リンクエラー？）
@@ -113,21 +117,21 @@ kotlin {
                 //implementation("io.ktor:ktor-client-cio:$ktorVersion")
             }
         }
-        //val macosX64Main by getting
+        //getByName("macosX64Main") {}
     }
 }
 
 tasks.named<DependencyUpdatesTask>(name = "dependencyUpdates") {
     resolutionStrategy {
-        componentSelection {
-            all {
+        componentSelection(Action<ComponentSelectionRulesWithCurrent> {
+            all(Action<ComponentSelectionWithCurrent> {
                 val rejected = arrayOf("alpha", "beta", "rc", "cr", "m", "preview", "b", "ea", "eap")
                     .map { "(?i).*[.-]$it[.\\d-+]*[.\\d\\w-+]*".toRegex() }
                     .any { candidate.version.matches(it) }
                 if (rejected) {
                     reject("Release candidate")
                 }
-            }
-        }
+            })
+        })
     }
 }
