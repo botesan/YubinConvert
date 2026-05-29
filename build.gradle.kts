@@ -75,7 +75,7 @@ kotlin {
         configure: KotlinNativeTargetWithHostTests.() -> Unit = {}
     ): KotlinNativeTargetWithHostTests.() -> Unit = {
         compilations["main"].cinterops {
-            create("sqlite3") { includeDirs(project.file("sqlite-amalgamation/source")) }
+            create("sqlite3") { includeDirs(project.file("sqlite-amalgamation")) }
             create("zopfli") { includeDirs(project.file("zopfli/src/zopfli")) }
         }
         binaries {
