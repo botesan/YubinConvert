@@ -168,7 +168,7 @@ private fun MutableList<MutableList<String>>.mergeDividedLine(
     return row
 }
 
-private fun List<String>.asMutable() = if (this is MutableList<String>) this else ArrayList(this)
+private fun List<String>.asMutable() = this as? MutableList<String> ?: ArrayList(this)
 
 private fun Sequence<List<String>>.mergeDividedLine(): List<MutableList<String>> {
     val merged = ArrayList<MutableList<String>>()

@@ -4,13 +4,13 @@ import codepoint.codePointToString
 import codepoint.isHankaku
 import codepoint.toCodePoints
 import files.fileStat
-import kotlinx.datetime.Clock
 import ksqlite3.SQLiteDB
 import ksqlite3.SQLiteOpenType
 import ksqlite3.rowEach
 import ksqlite3.runInTransaction
 import tool.*
 import util.use
+import kotlin.time.Clock
 
 interface DBFilenames {
     val zipKenAll: String

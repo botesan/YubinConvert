@@ -5,15 +5,17 @@ import files.fileStat
 import files.setFileModifiedTimeSec
 import files.writeFile
 import io.ktor.http.*
-import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.parse
 import tool.currentTimeText
+import kotlin.time.Instant
 
 interface DownloadFilenames {
     val zipKenAll: String
 }
 
-private val url = Url(urlString = "https://www.post.japanpost.jp/zipcode/dl/kogaki/zip/${DefaultFilenames.zipKenAll}")
+private val url =
+    Url(urlString = "https://www.post.japanpost.jp/service/search/zipcode/download/kogaki/zip/${DefaultFilenames.zipKenAll}")
 
 fun download(filenames: DownloadFilenames) {
     println("[${currentTimeText()}] Download from $url")

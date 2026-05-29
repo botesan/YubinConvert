@@ -1,12 +1,12 @@
 package tool
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.char
 import kotlinx.datetime.offsetAt
 import ksqlite3.SQLiteDB
+import kotlin.time.Clock
 
 private val TIME_FORMAT = DateTimeComponents.Format {
     hour()

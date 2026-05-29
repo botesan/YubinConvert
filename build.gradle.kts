@@ -10,14 +10,15 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.github.ben-manes:gradle-versions-plugin:0.52.0")
+        classpath("com.github.ben-manes:gradle-versions-plugin:0.54.0")
     }
 }
 
+@Suppress("AvoidApplyPluginMethod")
 apply(plugin = "com.github.ben-manes.versions")
 
 plugins {
-    kotlin("multiplatform") version "2.1.20"
+    kotlin("multiplatform") version "2.3.21"
 }
 
 group = "jp.mito.yconvert"
@@ -91,13 +92,13 @@ kotlin {
     //macosX64(configure =  createNativeConfigure())
 
     sourceSets {
-        val ktorVersion = "3.1.2"
+        val ktorVersion = "3.5.0"
         getByName("commonMain") {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
-                implementation(project.dependencies.platform("org.kotlincrypto.hash:bom:0.7.0"))
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0-0.6.x-compat")
+                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
+                implementation(project.dependencies.platform("org.kotlincrypto.hash:bom:0.8.0"))
                 implementation("org.kotlincrypto.hash:md")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
             }

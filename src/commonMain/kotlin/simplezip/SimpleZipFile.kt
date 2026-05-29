@@ -1,6 +1,5 @@
 package simplezip
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -10,6 +9,7 @@ import kotlinx.io.bytestring.decodeToString
 import simplezip.crc32.calcCRC32
 import simplezip.deflate.Deflate
 import kotlin.time.Duration.Companion.microseconds
+import kotlin.time.Instant
 
 // https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE_6.2.0.TXT
 
@@ -402,11 +402,11 @@ class SimpleZipFile(private val data: ByteArray) {
                 val second = (lastModFileTime.toInt() and 0b0001_1111) shl 1
                 return LocalDateTime(
                     year = year + 1980,
-                    monthNumber = month,
-                    dayOfMonth = day,
+                    month = month,
+                    day = day,
                     hour = hour,
                     minute = minute,
-                    second = second,
+                    second = second
                 )
             }
 
@@ -485,15 +485,15 @@ class SimpleZipFile(private val data: ByteArray) {
                 val modifiedTimeUtcMillisecondsFrom1601 =
                     (modifiedTimeUtc100NanosecondsFrom1601 / 10).microseconds.inWholeMilliseconds
                 val modifiedTimeUtcMillisecondsFrom1970 =
-                    (LocalDateTime(year = 1601, monthNumber = 1, dayOfMonth = 1, hour = 0, minute = 0, second = 0)
+                    (LocalDateTime(year = 1601, month = 1, day = 1, hour = 0, minute = 0, second = 0)
                         .toInstant(TimeZone.UTC) -
                             LocalDateTime(
                                 year = 1970,
-                                monthNumber = 1,
-                                dayOfMonth = 1,
+                                month = 1,
+                                day = 1,
                                 hour = 0,
                                 minute = 0,
-                                second = 0
+                                second = 0,
                             )
                                 .toInstant(TimeZone.UTC))
                         .inWholeMilliseconds + modifiedTimeUtcMillisecondsFrom1601
