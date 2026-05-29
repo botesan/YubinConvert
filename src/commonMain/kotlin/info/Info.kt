@@ -3,7 +3,6 @@ package info
 import command.Filenames
 import files.fileStat
 import files.readFile
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
@@ -11,6 +10,7 @@ import kotlinx.datetime.offsetAt
 import org.kotlincrypto.hash.md.MD5
 import tool.currentTimeText
 import kotlin.time.DurationUnit
+import kotlin.time.Instant
 import kotlin.time.toDuration
 
 fun info(filenames: Filenames) {
