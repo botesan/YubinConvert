@@ -3,12 +3,12 @@ package info
 import command.Filenames
 import files.fileStat
 import files.readFile
-import korlibs.crypto.md5
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.offsetAt
+import org.kotlincrypto.hash.md.MD5
 import tool.currentTimeText
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -38,6 +38,8 @@ private fun infoModifiedTime(filePath: String) {
     }
 }
 
+private val md5Digest = MD5()
+
 private fun infoHashAndSize(filePath: String) {
     print("\t$filePath")
     val stat = fileStat(filePath)
@@ -45,7 +47,10 @@ private fun infoHashAndSize(filePath: String) {
         println(" [not exist.]")
     } else {
         val bytes = readFile(filePath)
-        val md5 = bytes.md5().hexLower
+        val md5 = md5Digest.also { it.reset() }.digest(input = bytes)
+            .joinToString(separator = "") {
+                it.toUByte().toString(radix = 16).padStart(length = 2, padChar = '0').lowercase()
+            }
         println(" $md5 ${bytes.size}")
     }
 }
