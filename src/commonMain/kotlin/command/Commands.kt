@@ -6,6 +6,7 @@ import convert.csvConvert
 import convert.dbConvert
 import download.download
 import info.info
+import tool.currentTimeText
 import unzip.unZip
 
 private val name2Command = (All.commands + All + Compress + Info).associateBy { it.name }
@@ -43,8 +44,10 @@ object Compress : Command {
     override fun exec(options: Options) {
         compress(
             options.filenames,
+            options.deflateProgram,
             numIterations = options.numIterations,
             blockSplittingMax = options.blockSplittingMax,
+            enhanced = options.enhanced,
         )
     }
 }
@@ -53,5 +56,12 @@ object Info : Command {
     override val name: String = "info"
     override fun exec(options: Options) {
         info(options.filenames)
+    }
+}
+
+object Finish : Command {
+    override val name: String = "finish"
+    override fun exec(options: Options) {
+        println("[${currentTimeText()}] Finish")
     }
 }

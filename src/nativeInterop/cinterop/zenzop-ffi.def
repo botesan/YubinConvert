@@ -1,0 +1,20 @@
+depends = posix
+package = zenzop
+staticLibraries = libzenzop_ffi.a
+libraryPaths.mingw = zenzop-ffi/target/x86_64-pc-windows-gnullvm/release
+libraryPaths.linux = zenzop-ffi/target/release
+linkerOpts.mingw = -lntdll -luserenv
+
+---
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+int64_t zenzop_compress(
+    const uint8_t* input,
+    size_t input_len,
+    uint8_t* output,
+    size_t output_capacity,
+    uint64_t iterations,
+    uint16_t maximum_block_splits,
+    bool enhanced
+);

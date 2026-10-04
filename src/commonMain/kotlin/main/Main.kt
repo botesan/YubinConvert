@@ -7,8 +7,6 @@ import command.printKotlin
 import command.printPlatform
 import command.printSQLite3
 
-expect val PROGRAM_NAME: String
-
 fun main(args: Array<String>) {
     val argv = getArgv(args)
     val options = Options.parse(argv)

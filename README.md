@@ -5,20 +5,31 @@ KEN_ALL.CSVをSQLite3に変換
 ## 概要
 
 JPZipAddressで使用している郵便番号検索の検索用データベースを作成するのに使用しているプログラムです。
-https://play.google.com/store/apps/details?id=jp.mito.jpzipaddress
+
+- https://play.google.com/store/apps/details?id=jp.mito.jpzipaddress
 
 ## ビルド
 
-Kotlin/Nativeで記述しており、WindowsでWindowsバイナリをビルドできることを確認しています。
-WindowsではLinuxバイナリのビルドに失敗しますが 、WSL1のUbuntuでWindowsとLinuxバイナリをビルドできることを確認しています。
+zenzopを使用しているため、Rustをインストールしておいてください。
+
+- https://github.com/imazen/zenzop
+- https://rust-lang.org/ja/
+
+Kotlin/Nativeで記述しており、ホストOSのバイナリのみビルドできます。
+WindowsとLinuxのみ対応しています。
+
+WindowsでWindowsバイナリをビルドできることを確認しています。
+また、WindowsのDocker環境でLinuxバイナリをビルドできることを確認しています。
 
 Linuxではlibcurlのgnutlsバージョンが必要になるかもしれません。
-https://ktor.io/docs/client-engines.html#curl
+
+- https://ktor.io/docs/client-engines.html#curl
 
 ## 実行方法
 
 郵便局のサイトからken_all.zipをダウンロードし、作業ディレクトリに変換ファイルを出力します。
-https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
+
+- https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html
 
 ```
 YubinConvert.exe -d [作業ディレクトリ] all
@@ -31,16 +42,19 @@ usage:
     YubinConvert.exe [options] {all|download|unzip|convert|compress|info}...
 
 options:
-    -d  <dir> : 作業ディレクトリを指定します
-    -zi <num> : zopfliのiterator値指定
-    -zb <num> : zopfliのblock splitting max値の指定
+    -d  <dir>        : 作業ディレクトリを指定します
+    -zi <num>        : zopfli/zenzopのiterator値指定
+    -zb <num>        : zopfli/zenzopのblock splitting max値の指定
+    -ze <true|false> : zenzopのenhanced値の指定（zenzopのみ／デフォルトfalse）
+    -zopfli          : zopfliを使用して圧縮します（zenzopは使用しない／デフォルト）
+    -zenzop          : zenzopを使用して圧縮します（zopfliは使用しない）
 
 commands:
     all      : ダウンロードと展開、変換を行います（download,unzip,convertのみ）
     download : ken_all.zipをダウンロードします
     unzip    : ken_all.zipを展開します
     convert  : KEN_ALL.CSVファイルを変換します
-    compress : 変換したx_ken_all.sqliteをzopfliで圧縮します
+    compress : 変換したx_ken_all.sqliteをzopfliまたはzenzopで圧縮します
     info     : 各ファイルのMD5サム値などを表示します
 ```
 

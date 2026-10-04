@@ -1,0 +1,10 @@
+[package]
+name = "zenzop-ffi"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+zenzop = "0.4.2"
