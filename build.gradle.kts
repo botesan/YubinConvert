@@ -188,6 +188,16 @@ buildkonfig {
         buildConfigField(
             type = FieldSpec.Type.STRING,
             name = "PROGRAM_NAME",
+            value = rootProject.name,
+        )
+        buildConfigField(
+            type = FieldSpec.Type.STRING,
+            name = "VERSION",
+            value = "$version",
+        )
+        buildConfigField(
+            type = FieldSpec.Type.STRING,
+            name = "PROGRAM_COMMAND",
             value = "${rootProject.name}.${hostOs.family.exeSuffix}",
         )
     }

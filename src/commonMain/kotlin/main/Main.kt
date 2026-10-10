@@ -2,10 +2,7 @@ package main
 
 import arguments.Options
 import arguments.getArgv
-import command.printFilenames
-import command.printKotlin
-import command.printPlatform
-import command.printSQLite3
+import command.*
 
 fun main(args: Array<String>) {
     val argv = getArgv(args)
@@ -15,6 +12,7 @@ fun main(args: Array<String>) {
         return
     }
     //
+    printVersion()
     printPlatform()
     printKotlin()
     printSQLite3()

@@ -11,7 +11,7 @@ enum class DeflateProgram {
 }
 
 /**
- * @property program プログラム名
+ * @property programCommand プログラムコマンド
  * @property commands コマンド群
  * @property workDirectory 作業ディレクトリ
  * @property numIterations zopfliのnumIterations（負値は未設定）
@@ -21,7 +21,7 @@ enum class DeflateProgram {
  * @property isValid オプションが有効かどうか
  */
 data class Options(
-    val program: String,
+    val programCommand: String,
     val commands: List<Command>,
     val workDirectory: String,
     val numIterations: Int?,
@@ -36,7 +36,7 @@ data class Options(
     }
 
     private constructor(
-        program: String,
+        programCommand: String,
         commands: List<Command>,
         numIterations: Int?,
         blockSplittingMax: Int?,
@@ -44,7 +44,7 @@ data class Options(
         deflateProgram: DeflateProgram?,
         workDirectory: String?,
     ) : this(
-        program = program.ifEmpty { BuildKonfig.PROGRAM_NAME },
+        programCommand = programCommand.ifEmpty { BuildKonfig.PROGRAM_COMMAND },
         commands = commands,
         workDirectory = workDirectory ?: "",
         numIterations = numIterations,
@@ -56,11 +56,14 @@ data class Options(
                 && (blockSplittingMax == null || blockSplittingMax >= 0)
     )
 
-    fun printHelp() {
+    fun printHelp(prefixLine: Boolean = true) {
+        if (prefixLine) println()
         print(
             """
+            |${BuildKonfig.PROGRAM_NAME} - ${BuildKonfig.VERSION}
+            |
             |usage:
-            |    $program [options] {all|download|unzip|convert|compress|info}...
+            |    $programCommand [options] {all|download|unzip|convert|compress|info}...
             |
             |options:
             |    -d  <dir>        : 作業ディレクトリを指定します
@@ -172,7 +175,7 @@ data class Options(
             }
             //
             return Options(
-                program = program,
+                programCommand = program,
                 commands = commands.toList(),
                 workDirectory = workDirectory,
                 numIterations = numIterations,
