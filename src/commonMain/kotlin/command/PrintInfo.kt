@@ -1,7 +1,17 @@
 package command
 
+import jp.mito.yconvert.BuildKonfig
 import ksqlite3.SQLITE3_VERSION
 import kotlin.experimental.ExperimentalNativeApi
+
+fun printVersion() {
+    print(
+        """
+        |${BuildKonfig.PROGRAM_NAME}
+        |  version : ${BuildKonfig.VERSION}
+        |""".trimMargin()
+    )
+}
 
 fun printKotlin() {
     print(

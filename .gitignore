@@ -3,3 +3,4 @@
 build/
 /work/
 .kotlin/
+/zenzop-ffi/target/

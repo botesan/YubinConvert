@@ -1,5 +1,6 @@
 package compress
 
+import arguments.DeflateProgram
 import command.DefaultFilenames
 import files.readFile
 import files.writeFile
@@ -13,21 +14,44 @@ interface CompressFilenames {
     val gzDbXKenAll: String
 }
 
-fun compress(filenames: CompressFilenames, numIterations: Int?, blockSplittingMax: Int?) {
+fun compress(
+    filenames: CompressFilenames,
+    deflateProgram: DeflateProgram,
+    numIterations: Int?,
+    blockSplittingMax: Int?,
+    enhanced: Boolean?,
+) {
     println("[${currentTimeText()}] Compress : ${DefaultFilenames.dbXKenAll} to ${DefaultFilenames.gzDbXKenAll}")
     // DBファイル
     val dbBytes = readFile(filenames.dbXKenAll)
     // 圧縮
-    val gzDbBytes = compress(dbBytes, numIterations = numIterations, blockSplittingMax = blockSplittingMax)
+    val gzDbBytes = when (deflateProgram) {
+        DeflateProgram.ZOPFLI -> compressZopfli(
+            input = dbBytes,
+            numIterations = numIterations,
+            blockSplittingMax = blockSplittingMax,
+        )
+
+        DeflateProgram.ZENZOP -> compressZenzop(
+            input = dbBytes,
+            numIterations = numIterations,
+            blockSplittingMax = blockSplittingMax,
+            enhanced = enhanced,
+        )
+    }
     // 保存
-    writeFile(filenames.gzDbXKenAll, gzDbBytes)
+    writeFile(filePath = filenames.gzDbXKenAll, data = gzDbBytes)
     //
     println("\toriginal size = ${dbBytes.size}.")
     println("\tcompress size = ${gzDbBytes.size}.")
     println("\tCompress finish.")
 }
 
-private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: Int?): ByteArray {
+private fun compressZopfli(
+    input: ByteArray,
+    numIterations: Int?,
+    blockSplittingMax: Int?,
+): ByteArray {
     @OptIn(ExperimentalForeignApi::class)
     return memScoped {
         val options = alloc<ZopfliOptions>()
@@ -38,11 +62,11 @@ private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: I
         if (blockSplittingMax != null) {
             options.blockSplittingMax = blockSplittingMax
         }
+        println("\tuse Zopfli.")
         println("\tnumIterations     : ${options.numIterations}.")
         println("\tblockSplittingMax : ${options.blockSplittingMax}.")
         val output = allocPointerTo<UByteVar>()
         val outputSize = alloc<size_tVar>()
-        @OptIn(ExperimentalUnsignedTypes::class)
         input.asUByteArray().usePinned { inputPinned ->
             ZopfliCompress(
                 options = options.ptr,
@@ -60,6 +84,37 @@ private fun compress(input: ByteArray, numIterations: Int?, blockSplittingMax: I
             outputPointer.readBytes(size.toInt())
         } finally {
             free(outputPointer)
+        }
+    }
+}
+
+private fun compressZenzop(
+    input: ByteArray,
+    numIterations: Int?,
+    blockSplittingMax: Int?,
+    enhanced: Boolean?,
+): ByteArray {
+    @OptIn(ExperimentalForeignApi::class)
+    return memScoped {
+        input.asUByteArray().usePinned { inputPinned ->
+            val numIterations = numIterations ?: 15
+            val blockSplittingMax = blockSplittingMax ?: 15
+            val enhanced = enhanced ?: false
+            println("\tuse Zenzop.")
+            println("\tnumIterations     : ${numIterations}.")
+            println("\tblockSplittingMax : ${blockSplittingMax}.")
+            println("\tenhanced          : ${enhanced}.")
+            val output = allocArray<UByteVar>(length = input.size)
+            val result = ZenzopCompress(
+                input = inputPinned.addressOf(index = 0),
+                inputSize = input.size.convert(),
+                output = output,
+                outputCapacity = input.size.convert(),
+                iterations = numIterations.toULong(),
+                maximumBlockSplits = blockSplittingMax.toUShort(),
+                enhanced = enhanced,
+            )
+            output.readBytes(count = result.toInt())
         }
     }
 }
