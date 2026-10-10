@@ -171,6 +171,12 @@ kotlin {
     }
 }
 
+tasks.getByName<Task>(name = "clean") {
+    doFirst {
+        delete(file(path = "zenzop-ffi/target"))
+    }
+}
+
 dependencies {
     commonMainImplementation(platform(notation = "org.kotlincrypto.hash:bom:0.8.0"))
 }
